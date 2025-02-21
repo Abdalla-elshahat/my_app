@@ -1,0 +1,139 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.profile-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+}
+
+.header {
+  grid-column: span 2;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+.profile-image {
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+      width: auto !important;
+}
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+.avatarPost {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.follow-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stats div {
+  text-align: center;
+}
+
+/* Side Section */
+.side-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Posts Section */
+.posts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.post-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.post-card h4 {
+  margin: 5px 0;
+}
+
+.post-stats {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 18px;
+  font-size: 0.9em;
+  color: #777;
+}
+
+.date {
+  font-size: 0.8em;
+  color: #aaa;
+}
+.person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.namePerson {
+  margin: 0;
+  padding: 0;
+}
+.lightAction {
+  font-weight: 300;
+  color: #aaa;
+}
+.icons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+.icons span {
+  cursor: pointer;
+}
+.actionsPost {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}

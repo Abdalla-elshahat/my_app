@@ -1,0 +1,36 @@
+
+.for-you {
+    margin: 20px 0;
+  }
+  .for-you h3{
+    width: 294px;
+height: 68px;
+top: 561px;
+left: 79px;
+font-size: 40px;
+font-weight: 500;
+line-height: 67.77px;
+text-align: left;
+color: rgba(51, 98, 200, 1);
+  }
+  .for-you ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .for-you-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .for-you-item img {
+    width: 50px;
+    border-radius: 8px;
+  }
+  
+  .for-you-item span {
+    font-weight: bold;
+  }
+  

@@ -1,0 +1,111 @@
+
+import { useState } from "react";
+import SocialLogin from './SocialLogin';
+
+export default function RightSide() {
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+  return (
+    <>
+
+
+
+      <div className="w-full md:w-3/5 my-auto px-4 md:px-0">
+        <div className="max-w-md mx-auto">
+          <form>
+
+            <div className="space-y-6 mt-10 relative">
+            
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Name
+              </label>
+            
+              <i className="fa-regular fa-user absolute left-3 top-[56px]   text-gray-400"></i>
+
+
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full pl-10 px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter Your Name"
+                required
+              />
+            
+            </div>
+          
+            <div className="my-5 relative">
+
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              
+              <i className="fa-regular fa-envelope absolute left-3 top-[38px]   text-gray-400"></i>
+
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full pl-10 px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter Your Email"
+                required
+              />
+            
+            </div>
+          
+            <div className="mb-5 relative">
+
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              
+              <i className="fa-solid fa-lock absolute left-3 top-[38px]   text-gray-400"></i>
+
+
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full pl-10 px-3 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter Your Password"
+                required
+              />
+            </div>
+          
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4169E1] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+            >
+              Sign Up
+            </button>
+          </form>
+          <div className="mt-6 text-center">
+            <span className="text-sm text-gray-600">Already have an account? </span>
+            <a href="/login" className="text-sm text-blue-600 hover:text-blue-500">
+              Log in
+            </a>
+          </div>
+          <SocialLogin />
+        </div>
+      </div>
+    </>
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+

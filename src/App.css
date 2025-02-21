@@ -1,0 +1,36 @@
+:root {
+  --main-color: #3362C8;
+  --primary-color: white;
+  --secondary-color: black;
+}
+
+a{
+  text-decoration: none;
+}
+/* For WebKit Browsers (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 10px;
+  /* عرض الشريط */
+  height: 10px;
+  /* ارتفاع الشريط عند وجود scroll أفقي */
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  /* لون الخلفية للـ track */
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--main-color);
+  /* لون الشريط */
+  border-radius: 50px;
+  border: 2px solid var(--main-color);
+  /* تباعد داخلي لإضافة شكل مميز */
+  transition: background-color 0.3s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--main-color);
+  /* لون عند تمرير الماوس على الشريط */
+}
