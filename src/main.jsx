@@ -10,6 +10,7 @@ import Repass from "./maincomponents/Repass/Repass";
 import Verify from "./maincomponents/Verify/Verify";
 import Profile from "./components/Profile/Profle";
 import Saved from "./components/Saved/Saved";
+import PodcastsView from "./Podcustcomonents/Podcastview/Podcastview";
 function Main(){
     return(
         <>
@@ -18,12 +19,13 @@ function Main(){
             <Route path="/" element={<Home />} />
                 <Route path="/Home" element={<Home />} />
                 <Route path="/Podcasts" element={<Podcasts />} />
+                <Route path="/Podcasts/:id" element={<PodcastsView />} />
                 <Route path="/About" element={<About />} />
                 <Route path="/Contact" element={<Contact />} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/signup" element={<SignUp/>} />
                 <Route path="/forgetpass" element={<ForgetPassword/>} />
-                <Route path="/repass" element={<Repass/>} />
+                <Route path="/changepass" element={<Repass/>} />
                 <Route path="/Verify" element={<Verify/>} />
                 <Route path="/saved" element={<Saved/>} />
                 <Route path="/profile" element={<Profile/>} />

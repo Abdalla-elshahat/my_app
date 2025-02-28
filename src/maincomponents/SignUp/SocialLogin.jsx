@@ -1,4 +1,5 @@
-
+import { FcGoogle } from "react-icons/fc";
+import { IoLogoGithub } from "react-icons/io";
 export default function SocialLogin() {
  
     return (
@@ -21,11 +22,11 @@ export default function SocialLogin() {
       <div className="mt-6 flex gap-4 justify-center">
       
       <button className="p-2 border border-gray-300 rounded-full hover:bg-blue-700 hover:text-white">
-      <i className="fa-brands fa-google w-5 h-5"></i>
+      <FcGoogle/>
       </button>
       
       <button className="p-2 border border-gray-300 rounded-full hover:bg-blue-700 hover:text-white">
-      <i className="fa-brands fa-github w-5 h-5"></i>
+   <IoLogoGithub/>
       </button>
 
     </div>

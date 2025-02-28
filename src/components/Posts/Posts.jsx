@@ -2,6 +2,7 @@ import React from 'react';
 import './Posts.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faHeart, faShare } from '@fortawesome/free-solid-svg-icons';
+import AddPosts from './addposts/Addposts';
 
 const Posts = () => {
   const posts = [
@@ -32,6 +33,8 @@ const Posts = () => {
   ];
 
   return (
+    <div className='all-posts'>
+    <AddPosts/>
     <div className="posts">
       {posts.map((post) => (
         <div className="post" key={post.id}>
@@ -55,6 +58,7 @@ const Posts = () => {
           </div>
         </div>
       ))}
+    </div>
     </div>
   );
 };

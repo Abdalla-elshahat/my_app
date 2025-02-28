@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import SocialLogin from './../SignUp/SocialLogin';
+import { Link } from 'react-router-dom';
 
 export default function RightSide() {
 
@@ -61,9 +62,9 @@ export default function RightSide() {
 
               <div className="flex items-center justify-end">
             
-                <a href="#" className="text-sm text-blue-600 hover:text-blue-500">
+                <Link to={"/forgetpass"} className="text-sm text-blue-600 hover:text-blue-500">
                   Forgot Password?
-                </a>
+                </Link>
             
               </div>
 

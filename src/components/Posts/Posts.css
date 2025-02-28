@@ -3,6 +3,13 @@
   --primary-color: white;
   --secondary-color: black;
 }
+.all-posts{
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  width: 100%;
+  flex-direction: column;
+}
 
 .posts {
   display: flex;
@@ -10,7 +17,6 @@
   flex-direction: column;
   justify-content: center;
   gap:100px;
-  margin: 20px auto;
   padding: 10px;
   width: 100%; /* ✅ عرض الحاوية بالكامل */
   max-width: 1200px; /* ✅ حد أقصى لعدم التمدد الزائد */
