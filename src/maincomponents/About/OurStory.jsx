@@ -17,7 +17,7 @@ export default function OurStory() {
     
              <div className=" mx-auto">
     
-            <div className="grid grid-cols-1 gap-18 items-center bg-red-">
+            <div className="grid grid-cols-1 gap-[60px] items-center bg-red-">
     
 
               <div className="relative ">

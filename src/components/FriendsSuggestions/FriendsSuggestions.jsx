@@ -12,7 +12,7 @@ const FriendsSuggestions = () => {
   ];
 
   return (
-    <div className="friends-suggestions">
+    <div className="friends-suggestions  hidden md:block">
       <h3 className="suggestions-title">Suggestions for you</h3>
       <ul className="suggestions-list">
         {suggestions.map((friend) => (

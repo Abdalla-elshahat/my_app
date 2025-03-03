@@ -20,21 +20,21 @@ function RightSide() {
       document.getElementById(`otp-${index + 1}`).focus();
     }
   };
-  async function verify(e) {
+  async function verifyforget(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
     const otpString = otpCode.join(""); // تحويل المصفوفة إلى نص
-
+    console.log(email)
     try {
-      const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/VerifyOtp",
+      const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/VerifyOtpForResetPassword",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email:email,
+            email: email,
             otpCode: otpString,
           }),
         }
@@ -45,7 +45,7 @@ function RightSide() {
           icon: <FaCheckCircle color="green" />,
         });
         setTimeout(() => {
-          navigate("/login");
+          navigate("/changepass");
         }, 1000);
       } else {
         const errorData = await response.json();
@@ -99,7 +99,7 @@ function RightSide() {
         <p className="text-gray-500 text-[21px]">
           Enter the OTP sent to your Email
         </p>
-        <form className="space-y-7 mt-12" onSubmit={verify}>
+        <form className="space-y-7 mt-12" onSubmit={verifyforget}>
           <div className="flex justify-between w-3/4 mx-auto">
             {otpCode.map((num, index) => (
               <input

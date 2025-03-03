@@ -8,6 +8,7 @@ import SignUp from "./maincomponents/SignUp/SignUp";
 import ForgetPassword from "./maincomponents/ForgotPassword/ForgotPassword";
 import Repass from "./maincomponents/Repass/Repass";
 import Verify from "./maincomponents/Verify/Verify";
+import Verifyforget from "./maincomponents/Verifyforget/Verifyforget";
 import Profile from "./components/Profile/Profle";
 import Saved from "./components/Saved/Saved";
 import PodcastsView from "./Podcustcomonents/Podcastview/Podcastview";
@@ -27,6 +28,7 @@ function Main(){
                 <Route path="/forgetpass" element={<ForgetPassword/>} />
                 <Route path="/changepass" element={<Repass/>} />
                 <Route path="/Verify" element={<Verify/>} />
+                <Route path="/Verifyforget" element={<Verifyforget/>} />
                 <Route path="/saved" element={<Saved/>} />
                 <Route path="/profile" element={<Profile/>} />
             </Routes>

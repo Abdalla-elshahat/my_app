@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Aclonica&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 
+
 :root {
   --main-color: #3362C8;
   --primary-color: white;
@@ -17,14 +18,7 @@
   font-size: 30px;
 }
 
-.logo {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: var(--main-color);
-  font-family: 'Aclonica', sans-serif;
-}
-
-.navbar .search {
+/* .navbar .search {
   display: flex;
   align-items: center;
   border: 1px solid #858585;
@@ -34,7 +28,7 @@
   font-weight: bold;
   color: #858585;
   width: 50%
-}
+} */
 
 .search-bar {
   border: none;

@@ -31,7 +31,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className="sidebar hidden md:block">
       <ul>
         {menuItems.map((item, index) => (
           <li

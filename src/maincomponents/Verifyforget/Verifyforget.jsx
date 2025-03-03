@@ -4,7 +4,7 @@ import verifyPhot from '../../assets/verify.png'
 
 
 
-function Verify () {
+function Verifyforget () {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-4xl w-full flex flex-col md:flex-row rounded-lg shadow-lg overflow-hidden bg-white">
@@ -20,4 +20,4 @@ function Verify () {
   );
 }
 
-export default Verify;
+export default Verifyforget;

@@ -1,8 +1,8 @@
 
-// import phot1 from '../../assets/Frame 98.png'
-// import phot2 from '../../assets/Frame 99.png'
-// import phot3 from '../../assets/Frame 101.png'
-// import phot4 from '../../assets/Frame 100.png'
+import phot1 from '../../assets/Frame 98.png'
+import phot2 from '../../assets/Frame 99.png'
+import phot3 from '../../assets/Frame 101.png'
+import phot4 from '../../assets/Frame 100.png'
 
 export default function AboutUs() {
 
@@ -26,7 +26,7 @@ export default function AboutUs() {
                   <div className="col-span-12 md:col-span-4 ">
         
                     <img 
-                      src = "https://media.licdn.com/dms/image/v2/C4D0BAQGDceq5L-hdZg/company-logo_200_200/company-logo_200_200/0/1655377952271/imgs_group_logo?e=2147483647&v=beta&t=ZVurDhjjyZORPNZM8ewigaKGG4gq3o3xHeWwN37Nkt8"
+                      src = {phot1}
                       alt="Team collaboration" 
                       className="w-full h-90 object-cover rounded-lg"
                     />
@@ -37,13 +37,13 @@ export default function AboutUs() {
                     <div className="grid grid-rows-2 gap-4 h-90">
         
                       <img 
-                      src ="https://media.licdn.com/dms/image/v2/C4D0BAQGDceq5L-hdZg/company-logo_200_200/company-logo_200_200/0/1655377952271/imgs_group_logo?e=2147483647&v=beta&t=ZVurDhjjyZORPNZM8ewigaKGG4gq3o3xHeWwN37Nkt8"
+                      src ={phot2}
                         alt="Modern office" 
                         className="w-full h-full  object-cover rounded-lg"
                       />
         
                       <img 
-                     src ="https://media.licdn.com/dms/image/v2/C4D0BAQGDceq5L-hdZg/company-logo_200_200/company-logo_200_200/0/1655377952271/imgs_group_logo?e=2147483647&v=beta&t=ZVurDhjjyZORPNZM8ewigaKGG4gq3o3xHeWwN37Nkt8"
+                     src ={phot3}
                         alt="Team meeting" 
                         className="w-full h-full object-cover rounded-lg"
                       />
@@ -55,7 +55,7 @@ export default function AboutUs() {
                   <div className="col-span-12 md:col-span-4">
                     
                     <img 
-                       src = "https://media.licdn.com/dms/image/v2/C4D0BAQGDceq5L-hdZg/company-logo_200_200/company-logo_200_200/0/1655377952271/imgs_group_logo?e=2147483647&v=beta&t=ZVurDhjjyZORPNZM8ewigaKGG4gq3o3xHeWwN37Nkt8"
+                       src = {phot4}
                       alt="Collaboration" 
                       className="w-full h-90 object-cover rounded-lg"
                     />

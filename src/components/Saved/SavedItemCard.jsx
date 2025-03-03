@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useState } from "react";
 import Icons from "../Icons/Icons";
 const SavedItemCard = ({
   name,
@@ -8,6 +8,7 @@ const SavedItemCard = ({
   comments,
   profileImage,
 }) => {
+  const [showDetails, setShowDetails] = useState(true);
   return (
     <div className="saved-item-card">
       <div className="saved-card-header">
@@ -18,7 +19,13 @@ const SavedItemCard = ({
         </div>
       </div>
       <div className="saved-card-content">
-        <p>{content}</p>
+        {showDetails && <p>{content}</p>}
+        <button
+          className="text-blue-600"
+          onClick={() => setShowDetails((h) => !h)}
+        >
+          {showDetails ? "Hide" : "Show"} details
+        </button>
       </div>
       <div className="saved-card-footer">
         <span>

@@ -1,32 +1,36 @@
-import { FcGoogle } from "react-icons/fc";
-import { IoLogoGithub } from "react-icons/io";
+
+import googlePhot from '../../assets/google.png'
+
+import githubPhot from '../../assets/github.png'
+
+
 export default function SocialLogin() {
  
     return (
 
         <>
         
-        <div className="mt-6">
+        <div className="mt-3">
       
       <div className="relative">
     
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300" />
+        <div className="absolute inset-0 bg-re-500 flex items-center">
+          <div className="w-1/2 mx-auto border-t border-gray-400" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">or</span>
+          <span className="px-2 bg-white text-gray-700 text-xl">or</span>
         </div>
       </div>
 
 
-      <div className="mt-6 flex gap-4 justify-center">
+      <div className="mt-3 flex gap-4 justify-center">
       
-      <button className="p-2 border border-gray-300 rounded-full hover:bg-blue-700 hover:text-white">
-      <FcGoogle/>
+      <button className="p-2 border border-gray-100 rounded-full ">
+      <img src = {googlePhot} className='w-[22px]' alt="" />
       </button>
       
-      <button className="p-2 border border-gray-300 rounded-full hover:bg-blue-700 hover:text-white">
-   <IoLogoGithub/>
+      <button className="p-2 border border-gray-100 rounded-full ">
+      <img src = {githubPhot}  className='w-[22px]' alt="" />
       </button>
 
     </div>
