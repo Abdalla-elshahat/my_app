@@ -1,55 +1,14 @@
 import { useContext, useState } from "react";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // ✅ استخدام useNavigate
-import { toast } from "react-toastify";
 import LoadingIcons from "react-loading-icons";
 import { EmailContext } from "../../App";
-
+import { ForgetPassword } from "../../apicalls/auth";
 export default function RightSide() {
+  const { Setemail } = useContext(EmailContext); // استخدام الكونتكست
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // ✅ تعريف useNavigate
- const { Setemail } = useContext(EmailContext); // استخدام الكونتكست
-  async function ForgetPassword(e) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const response = await fetch(
-        "http://arabdevcommunity.runasp.net/api/Account/ForgetPassword",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      setLoading(false);
-      if (response.ok) {
-        Setemail(email)
-        toast.success("OTP has been sent to your email.", {
-          icon: <FaCheckCircle color="green" />,
-        });
-
-        setTimeout(() => {
-          navigate("/Verifyforget"); // ✅ استخدام navigate بدلاً من Navigate()
-        }, 1000);
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          `Error during signup: ${errorData.message || "Unknown error"}`,
-          { icon: <FaExclamationCircle color="red" /> }
-        );
-      }
-    } catch (error) {
-      setLoading(false);
-      setError("Error signing up. Please try again.");
-    }
-  }
-
   return (
     <div className="w-full md:w-3/5 px-4 md:px-0 mt-8">
       <div className="max-w-md mx-auto">
@@ -58,7 +17,7 @@ export default function RightSide() {
           <span className="sm:block text-center"> this Email</span>
         </p>
 
-        <form className="space-y-7 mt-12" onSubmit={ForgetPassword}>
+        <form className="space-y-7 mt-12" onSubmit={(e)=>ForgetPassword(e, email, setError, setLoading, Setemail, navigate)}>
           <div>
             <label
               htmlFor="email"

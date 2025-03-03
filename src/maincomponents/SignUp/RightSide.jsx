@@ -5,11 +5,11 @@ import { MdOutlineEmail } from "react-icons/md";
 import { CiLock } from "react-icons/ci";
 import { IoEye } from "react-icons/io5";
 import { IoMdEyeOff } from "react-icons/io";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import LoadingIcons from 'react-loading-icons';
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { EmailContext } from "../../App";
+import {signup} from "../../apicalls/auth"
 function RightSide() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,51 +19,11 @@ function RightSide() {
   const [loading, setLoading] = useState(false);
   const { Setemail } = useContext(EmailContext); // استخدام الكونتكست
   const navigate = useNavigate();
-  function validatePassword(password) {
-    const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-    return regex.test(password);
-  }
-  async function signup(e) {
-    e.preventDefault();
-    setError("");
-    if (!validatePassword(password)) {
-      setError("Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/SignUp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          displayName: name,
-          email: email,
-          password: password,
-        }),
-      });
-      setLoading(false);
-      if (response.ok) {
-        Setemail(email); 
-        toast.success("OTP has been sent to your email.", { icon: <FaCheckCircle color="green" /> });
-        setTimeout(() => {
-          navigate("/Verify");
-        }, 1000);
-      } else {
-        const errorData = await response.json();
-        toast.error(`Error during signup: ${errorData.message || "Unknown error"}`, { icon: <FaExclamationCircle color="red" /> });
-      }
-    } catch (error) {
-      setLoading(false);
-      setError("Error signing up. Please try again.");
-    }
-  }
   return (
     <div className="w-full md:w-3/5 my-auto px-4 md:px-0">
        <ToastContainer />
       <div className="max-w-md mx-auto">
-        <form onSubmit={signup}>
+      <form onSubmit={(e) => signup(e, name, password, email, setError, setLoading, Setemail, navigate)}>
           <div className="mt-10 relative">
             <label htmlFor="name" className="block text-md font-bold text-[#939393] mb-2">Name</label>
             <AiOutlineUser className="absolute left-3 top-[44px] text-[18px] text-gray-500" />

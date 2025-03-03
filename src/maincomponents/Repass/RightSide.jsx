@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { CiLock } from "react-icons/ci";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { MdAlternateEmail } from "react-icons/md";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { IoMdEyeOff } from "react-icons/io";
+
 import { IoEye } from "react-icons/io5";
+import { changePassword } from "../../apicalls/auth";
 export default function RightSide() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,51 +16,6 @@ export default function RightSide() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  function validatePassword(password) {
-    const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-    return regex.test(password);
-  }
-  async function changePassword(e) {
-    e.preventDefault();
-    setError("");
-    if (!validatePassword(password)) {
-      setError("Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character.");
-      return;
-    }
-    if (password !== confirmpassword) {
-      setError("Passwords do not match!");
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/ResetPassword",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            email:email, 
-            newPassword:password 
-          }),
-        }
-      );
-      setLoading(false);
-      if (response.ok) {
-        toast.success("Your password is changed", {
-          icon: <FaCheckCircle color="green" />,
-        });
-        setTimeout(() => navigate("/login"), 1000);
-      } else {
-        const errorData = await response.json();
-        toast.error(`Error: ${errorData.message || "Unknown error"}`, {
-          icon: <FaExclamationCircle color="red" />,
-        });
-      }
-    } catch {
-      setLoading(false);
-      setError("Error signing up. Please try again.");
-    }
-  }
-
   return (
     <div className="w-full md:w-3/5 px-4 md:px-0 mt-8">
            <ToastContainer />
@@ -69,7 +25,7 @@ export default function RightSide() {
           <span className="sm:block text-center">previously used password</span>
         </p>
 
-        <form className="space-y-6 mt-5" onSubmit={changePassword}>
+        <form className="space-y-6 mt-5" onSubmit={(e)=>changePassword(e,confirmpassword, password, email, setError, setLoading, navigate)}>
           <div className="relative">
             <label htmlFor="Email" className="block text-md font-bold text-[#939393] mb-2">
               Email
@@ -88,7 +44,7 @@ export default function RightSide() {
 
           <div className="relative">
             <label htmlFor="password" className="block text-md font-bold text-[#939393] mb-2">
-              Password
+              New Password
             </label>
             <CiLock className="text-[17px] absolute left-3 top-[45px] text-gray-800" />
             <input

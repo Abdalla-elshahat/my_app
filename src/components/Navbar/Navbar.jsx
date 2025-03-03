@@ -1,40 +1,23 @@
 import "../Navbar/Navbar.css";
 import React, { useState } from "react";
 import { Search, Bell, Menu, X } from "lucide-react";
-import { Link, Navigate, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { toast, ToastContainer } from "react-toastify";
-import { FaExclamationCircle } from "react-icons/fa";
+import { ToastContainer } from "react-toastify";
+import { Logout } from "../../apicalls/auth";
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const token =Cookies.get("token");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const token = Cookies.get("token");
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  async function logout(e) {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/Logout",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (response.ok) {
-        setTimeout(() => Navigate("/login"), 1000);
-      } else {
-        const errorData = await response.json();
-        toast.error(`Error: ${errorData.message || "Unknown error"}`, {
-          icon: <FaExclamationCircle color="red" />,
-        });
-      }
-    } catch {
-    }
-  }
   return (
     <div className=" bg-gray-100 dark:bg-gray-900">
-         <ToastContainer />
+      <ToastContainer />
       <nav className="bg-white shadow-md md:mb-1">
         <div className=" mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -71,40 +54,41 @@ function Navbar() {
 
             {/* Right side icons */}
             <div className="hidden md:flex items-center space-x-4">
-            {
-  token ? (
-    <>
-      <button className="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none">
-        <Bell className="h-6 w-6" />
-      </button>
-      <div className="flex items-center">
-        <img
-          className="h-8 w-8 rounded-full"
-          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-          alt="User profile"
-        />
-      </div>
-      <div className="auth-buttons">
-      <button className="login-btn">
-        <Link onClick={logout}>Logout</Link>
-      </button>
-      </div>
-    </>
-  ) : (
-    <div className="auth-buttons">
-      <button className="login-btn">
-        <Link to={"/login"}>Log in</Link>
-      </button>
-      <button className="signup-btn">
-        <Link to={"/signup"}>Sign Up</Link>
-      </button>
-    </div>
-  )
-}
-
-</div>
-    
-
+              {token ? (
+                <>
+                  <button className="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <Bell className="h-6 w-6" />
+                  </button>
+                  <div className="flex items-center">
+                    <img
+                      className="h-8 w-8 rounded-full"
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      alt="User profile"
+                    />
+                  </div>
+                  <div className="auth-buttons">
+                    <button className="login-btn">
+                      <Link
+                        onClick={(e) =>
+                          Logout(e, setError, setLoading, navigate)
+                        }
+                      >
+                        Logout
+                      </Link>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="auth-buttons">
+                  <button className="login-btn">
+                    <Link to={"/login"}>Log in</Link>
+                  </button>
+                  <button className="signup-btn">
+                    <Link to={"/signup"}>Sign Up</Link>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Mobile menu button */}
             <div className="flex items-center md:hidden">

@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { EmailContext } from "../../App";
+import { verify } from "../../apicalls/auth";
+import { resendOTPS } from "../../apicalls/auth";
 function RightSide() {
-  const [otpCode, setOtpCode] = useState(["", "", "", "","",""]);
+  const [otpCode, setOtpCode] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -20,86 +21,19 @@ function RightSide() {
       document.getElementById(`otp-${index + 1}`).focus();
     }
   };
-  async function verify(e) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    const otpString = otpCode.join(""); // تحويل المصفوفة إلى نص
-
-    try {
-      const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/VerifyOtp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email:email,
-            otpCode: otpString,
-          }),
-        }
-      );
-      setLoading(false);
-      if (response.ok) {
-        toast.success("Email successfully verified", {
-          icon: <FaCheckCircle color="green" />,
-        });
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000);
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          `Error during verification: ${errorData.message || "Unknown error"}`,
-          { icon: <FaExclamationCircle color="red" /> }
-        );
-      }
-    } catch (error) {
-      setLoading(false);
-      setError("Error verifying. Please try again.");
-    }
-  }
-  async function ResendOTP(e) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/ResendOtp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-          }),
-        }
-      );
-      setLoading(false);
-      if (response.ok) {
-        toast.success("Otp is resend successfully", {
-          icon: <FaCheckCircle color="green" />,
-        });
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          `Error during verification: ${errorData.message || "Unknown error"}`,
-          { icon: <FaExclamationCircle color="red" /> }
-        );
-      }
-    } catch (error) {
-      setLoading(false);
-      setError("Error verifying. Please try again.");
-    }
-  }
   return (
     <div className="w-full md:w-3/5 px-4 md:px-0 mt-8">
-       <ToastContainer />
+      <ToastContainer />
       <div className="max-w-md mx-auto text-center">
         <p className="text-gray-500 text-[21px]">
           Enter the OTP sent to your Email
         </p>
-        <form className="space-y-7 mt-12" onSubmit={verify}>
+        <form
+          className="space-y-7 mt-12"
+          onSubmit={(e) =>
+            verify(e, email, setError, setLoading, otpCode, navigate)
+          }
+        >
           <div className="flex justify-between w-3/4 mx-auto">
             {otpCode.map((num, index) => (
               <input
@@ -113,7 +47,10 @@ function RightSide() {
               />
             ))}
           </div>
-          <button  onClick={ResendOTP}>Resend OTP?</button>
+          <button onClick={(e) => resendOTPS(e, email, setError, setLoading)}>
+            Resend OTP?
+          </button>
+          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
           <button
             type="submit"
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-md text-[18px] text-white bg-[#4169E1] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

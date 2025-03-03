@@ -2,78 +2,25 @@ import { useContext, useState } from "react";
 import SocialLogin from "./../SignUp/SocialLogin";
 import { MdOutlineEmail } from "react-icons/md";
 import { CiLock } from "react-icons/ci";
-import { Link, Navigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import { Link, useNavigate } from "react-router-dom";
 import { IoMdEyeOff } from "react-icons/io";
 import { IoEye } from "react-icons/io5";
-import { toast, ToastContainer } from "react-toastify";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import { ToastContainer } from "react-toastify";
 import { EmailContext } from "../../App";
+import {Login} from "../../apicalls/auth"
 function RightSide() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [redirect, setRedirect] = useState(false);
   const { Setemail } = useContext(EmailContext); // استخدام الكونتكست
-  function validatePassword(password) {
-    const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-    return regex.test(password);
-  }
-
-  async function Login(e) {
-    e.preventDefault();
-    setError("");
-
-    if (!validatePassword(password)) {
-      setError(
-        "Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character."
-      );
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await fetch(
-        "http://arabdevcommunity.runasp.net/api/Account/Login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      setLoading(false);
-
-      if (response.ok) {
-        const data = await response.json();
-        Setemail(email)
-        Cookies.set("token", data.token); // تخزين التوكن لمدة 7 أيام
-        toast.success("Logged in successfully", { icon: <FaCheckCircle color="green" /> });
-        setRedirect(true);
-      } else {
-        const errorData = await response.json();
-        toast.error(`Error during login: ${errorData.message || "Unknown error"}`, {
-          icon: <FaExclamationCircle color="red" />,
-        });
-      }
-    } catch (error) {
-      setLoading(false);
-      setError("Error logging in. Please try again.");
-    }
-  }
-
-  if (redirect) {
-    return <Navigate to="/" />;
-  }
-
+  const navigate = useNavigate();
   return (
     <div className="w-full md:w-3/5 my-auto px-4 md:px-0">
        <ToastContainer />
       <div className="max-w-md mx-auto">
-        <form className="space-y-6 mt-5" onSubmit={Login}>
+        <form className="space-y-6 mt-5" onSubmit={(e)=>Login(e,  password, email, setError, setLoading, Setemail, navigate)}>
           <div className="relative">
             <label htmlFor="email" className="block text-md font-bold text-[#939393] mb-2">
               Email
