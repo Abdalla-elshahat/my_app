@@ -1,6 +1,7 @@
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
+import { Domain } from "../utels/consts";
 // التحقق من كلمة المرور
 function validatePassword(password) {
   const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
@@ -19,7 +20,7 @@ export async function signup(e, name, password, email, setError, setLoading, Set
   setLoading(true);
   try {
     const response = await fetch(
-      "http://arabdevcommunity.runasp.net/api/Account/SignUp",
+      `${Domain}/api/Account/SignUp`,
       {
         method: "POST",
         headers: {
@@ -58,7 +59,7 @@ export async function verifyForget(e, email, otpCode, setError, setLoading, navi
 
   try {
     const response = await fetch(
-      "http://arabdevcommunity.runasp.net/api/Account/VerifyOtpForResetPassword",
+      `${Domain}/api/Account/VerifyOtpForResetPassword`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -94,7 +95,7 @@ export async function resendOTPS(e, email, setError, setLoading) {
 
   try {
     const response = await fetch(
-      "http://arabdevcommunity.runasp.net/api/Account/ResendOtp",
+      `${Domain}/api/Account/ResendOtp`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -125,7 +126,7 @@ export async function ResendOTPF(e, email, setError, setLoading) {
   setError("");
   setLoading(true);
   try {
-    const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/SendOtpForPassword",
+    const response = await fetch(`${Domain}/api/Account/SendOtpForPassword`,
       {
         method: "POST",
         headers: {
@@ -161,7 +162,7 @@ export async function verify(e,  email, setError, setLoading,otpCode, navigate) 
   const otpString = otpCode.join(""); // تحويل المصفوفة إلى نص
 
   try {
-    const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/VerifyOtp",
+    const response = await fetch(`${Domain}/api/Account/VerifyOtp`,
       {
         method: "POST",
         headers: {
@@ -207,7 +208,7 @@ export async function Login(e,  password, email, setError, setLoading, Setemail,
   setLoading(true);
   try {
     const response = await fetch(
-      "http://arabdevcommunity.runasp.net/api/Account/Login",
+      `${Domain}/api/Account/Login`,
       {
         method: "POST",
         headers: {
@@ -245,7 +246,7 @@ export async function ForgetPassword(e, email, setError, setLoading, Setemail, n
   setLoading(true);
   try {
     const response = await fetch(
-      "http://arabdevcommunity.runasp.net/api/Account/ForgetPassword",
+      `${Domain}/api/Account/ForgetPassword`,
       {
         method: "POST",
         headers: {
@@ -285,7 +286,7 @@ export async function verifyforget(e, email, setError, setLoading,otpCode, navig
   const otpString = otpCode.join(""); // تحويل المصفوفة إلى نص
   console.log(email)
   try {
-    const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/VerifyOtpForResetPassword",
+    const response = await fetch(`${Domain}/api/Account/VerifyOtpForResetPassword`,
       {
         method: "POST",
         headers: {
@@ -331,7 +332,7 @@ export async function changePassword(e,confirmpassword, password, email, setErro
   }
   setLoading(true);
   try {
-    const response = await fetch("http://arabdevcommunity.runasp.net/api/Account/ResetPassword",
+    const response = await fetch(`${Domain}/api/Account/ResetPassword`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
