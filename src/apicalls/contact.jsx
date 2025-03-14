@@ -1,4 +1,3 @@
-
 import { Domain, token } from "../utels/consts";
 import { toast } from "react-toastify";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";

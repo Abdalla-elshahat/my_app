@@ -9,9 +9,12 @@ import ForgetPassword from "./maincomponents/ForgotPassword/ForgotPassword";
 import Repass from "./maincomponents/Repass/Repass";
 import Verify from "./maincomponents/Verify/Verify";
 import Verifyforget from "./maincomponents/Verifyforget/Verifyforget";
-import Profile from "./components/Profile/Profle";
 import Saved from "./components/Saved/Saved";
 import PodcastsView from "./Podcustcomonents/Podcastview/Podcastview";
+import Profile from "./components/Profile/Profile";
+import Profileusers from "./components/profileusers/Profileusers";
+import AddFriends from "./components/addFriends/addfriends";
+
 function Main(){
     return(
         <>
@@ -31,6 +34,9 @@ function Main(){
                 <Route path="/Verifyforget" element={<Verifyforget/>} />
                 <Route path="/saved" element={<Saved/>} />
                 <Route path="/profile" element={<Profile/>} />
+                <Route path="/profileusers/:id" element={<Profileusers/>} />
+                <Route path="/AddFriends" element={<AddFriends/>} />
+                
             </Routes>
         </div>
         </>

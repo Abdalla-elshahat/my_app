@@ -7,9 +7,9 @@ import {
   faEnvelope,
   faHouse,
   faMicrophone,
+  faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-
 const Sidebar = () => {
   const [activeIndex, setActiveIndex] = useState(0); // الحالة للعناصر النشطة
   const navigate = useNavigate(); // دالة للتنقل بين الروابط
@@ -20,6 +20,7 @@ const Sidebar = () => {
     { icon: faBookmark, label: 'Saved', path: '/Saved' },
     { icon: faClipboard, label: 'About', path: '/About' },
     { icon: faEnvelope, label: 'Contact', path: '/Contact' },
+    { icon: faUserPlus, label: 'Add', path: '/AddFriends' }, 
   ];
 
   // التنقل بعد ثانية
