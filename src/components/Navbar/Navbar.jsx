@@ -1,20 +1,67 @@
 import "../Navbar/Navbar.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Search, Bell, Menu, X } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { ToastContainer } from "react-toastify";
 import { Logout } from "../../apicalls/auth";
+import axios from "axios";
+import { Domain} from "../../utels/consts";
+import Cookies from "js-cookie";
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const token = Cookies.get("token");
+  const [userName, setUserName] = useState("")
+  const [userPicture, setUserPicture] = useState("")
+  const [userEmail, setUserEmail] = useState("")
+  const token =Cookies.get("token")
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+  function getProfile() {
+    axios
+      .get(`${Domain}/api/Profile/UserProfile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data.data.displayName)
+        console.log(res.data.data.pictureUrl)
+
+        setUserName(res.data.data.displayName)
+
+        setUserPicture(res.data.data.pictureUrl)
+
+      })
+      .catch((err) => {
+        console.error("Error fetching profile:", err);
+      });
+  }
+// GetCurrentUser endpoint
+  function getEmail() {
+    axios
+      .get(`${Domain}/api/Account/GetCurrentUser`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+
+        console.log(res.data.email)
+        setUserEmail(res.data.email)
+      })
+      .catch((err) => {
+        console.error("Error fetching profile:", err);
+      });
+  }
+  useEffect(() => {
+      getProfile();
+      getEmail();
+  }, []);
+
   return (
     <div className=" bg-gray-100 dark:bg-gray-900">
       <ToastContainer />
@@ -60,14 +107,15 @@ function Navbar() {
                     <Bell className="h-6 w-6" />
                   </button>
                   <div className="flex items-center">
-                    <img
-                      className="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt="User profile"
-                    />
+                  <Link to={"/profile"}> <img
+          className="h-10 w-10 rounded-full ml-2"
+          src = {`${Domain}${userPicture}`}
+          alt="User profile"
+        /></Link> 
+
                   </div>
                   <div className="auth-buttons">
-                    <button className="login-btn">
+                    <button className="login-btn py-[4px] px-[18px]">
                       <Link
                         onClick={(e) =>
                           Logout(e, setError, setLoading, navigate)
@@ -80,10 +128,10 @@ function Navbar() {
                 </>
               ) : (
                 <div className="auth-buttons">
-                  <button className="login-btn">
+                  <button className="login-btn py-[4px] px-[18px]">
                     <Link to={"/login"}>Log in</Link>
                   </button>
-                  <button className="signup-btn">
+                  <button className="signup-btn py-[4px] px-[18px]">
                     <Link to={"/signup"}>Sign Up</Link>
                   </button>
                 </div>
@@ -152,6 +200,7 @@ function Navbar() {
             >
               About
             </NavLink>
+ 
             <NavLink
               to="/Contact"
               className={({ isActive }) =>
@@ -162,35 +211,77 @@ function Navbar() {
             >
               Contact
             </NavLink>
+
+            <NavLink
+              to="/AddFriends"
+              className={({ isActive }) =>
+                `border-l-4 block pl-3 pr-4 py-2 text-base font-medium ${
+                  isActive ? "border-l-[#3362C8]" : ``
+                }`
+              }
+            >
+              Add Friends
+            </NavLink>
+
+
+
           </div>
 
           {/* Mobile action buttons */}
 
           <div className="pt-4 pb-3 border-t border-gray-200">
+            
             <div className="flex items-center px-4">
-              <div className="flex-shrink-0">
-                <img
-                  className="h-10 w-10 rounded-full"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt="User profile"
-                />
-              </div>
 
-              <div className="ml-3">
-                <div className="text-base font-medium text-gray-800">
-                  Tom Cook
-                </div>
-                <div className="text-sm font-medium text-gray-500">
-                  tom@example.com
-                </div>
-              </div>
 
-              <div className="flex bg--500 ml-auto">
-                <div className="auth-buttons">
-                  <button className="login-btn">Log in</button>
-                  <button className="signup-btn">Sign Up</button>
-                </div>
-              </div>
+<div className="flex items-center justify-between w-full space-x-4 bg--500">
+  {token ? (
+    <>
+      <div className="flex-shrink-0">
+      <Link to={"/profile"}> <img
+          className="h-10 w-10 rounded-full ml-2"
+          src = {`${Domain}${userPicture}`}
+          alt="User profile"
+        /></Link> 
+
+<div className="ml-3">
+        <div className="text-base font-medium text-gray-800">{userName}</div>
+        <div className="text-sm font-medium text-gray-500">{userEmail}</div>
+      </div>
+      </div>
+
+
+
+      <div className="auth-buttons">
+      <button className="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <Bell className="h-6 w-6" />
+                  </button>
+
+                    <button className="login-btn py-[4px] px-[18px]">
+                      <Link
+                        onClick={(e) =>
+                          Logout(e, setError, setLoading, navigate)
+                        }
+                      >
+                        Logout
+                      </Link>
+                    </button>
+                  </div>
+    </>
+  ) : (
+    <div className="flex ml-auto">
+      <div className="auth-buttons">
+        <Link to="/login">
+          <button className="login-btn py-[4px] px-[14px] md:px-[18px] font-bold text-sm">Log in</button>
+        </Link>
+
+        <Link to="/signup">
+          <button className="signup-btn py-[4px] px-[14px] md:px-[18px] font-bold text-sm">Sign Up</button>
+        </Link>
+      </div>
+    </div>
+  )}
+</div>
             </div>
           </div>
         </div>

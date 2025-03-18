@@ -49,10 +49,10 @@
 
 .auth-buttons button {
   margin-left: 10px;
-  padding: 5px 20px;
+  /* padding: 5px 20px; */
   cursor: pointer;
   border-radius: 15px;
-  font-size: 25px;
+  /* font-size: 25px; */
   transition-duration: 0.5s;
 }
 
@@ -81,7 +81,7 @@
 
 @media(max-width:1400px) {
   .auth-buttons button {
-    font-size: 15px;
+    /* font-size: 15px; */
   }
 
   .logo {

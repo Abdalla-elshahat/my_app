@@ -3,7 +3,7 @@ import { Domain } from "../../utels/consts";
 import { Link } from "react-router-dom"
 import { followUser } from "../../apicalls/follows";
 
-function Popup({ title, data,setdate, onClose}) {
+function Popup({ title, data,setdate, onClose,Profilelogin}) {
   const [search,setSearch]=useState("");
     // تصفية المستخدمين بناءً على البحث
     const filteredUsers = data.filter((user) =>
@@ -49,21 +49,32 @@ function Popup({ title, data,setdate, onClose}) {
                     className="w-10 h-10 bg-gray-300 rounded-full object-cover"
                   />
                   <div>
-                   <Link to={`/profileusers/${user.id}`}><h3 className="text-sm font-semibold"  onClick={onClose}>{user.displayName}</h3></Link>
+                    {
+                      (Profilelogin.id !== user.id) ?(
+                        <Link to={`/profileusers/${user.id}`}><h3 className="text-sm font-semibold"  onClick={onClose}>{user.displayName}</h3></Link>
+                      ):(
+                        <Link to={`/profile`}><h3 className="text-sm font-semibold"  onClick={onClose}>{user.displayName}</h3></Link>
+                      )
+                    }
+                  
                     <p className="text-gray-500 text-xs">{user.job || "No job listed"}</p>
                   </div>
                 </div>
                      {/* زر Follow */}
-              <button
-                onClick={(e) => followUser(user.id,e,setdate)}
-                className={`px-4 py-2 rounded-full transition-all ${
-                  user.isFollowedByCurrentUser
-                    ? "bg-red-500 text-white hover:bg-red-600"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
-                }`}
-              >
-                {user.isFollowedByCurrentUser? "Unfollow" : "Follow"}
-              </button>
+                     {
+  Profilelogin.id !== user.id && (
+    <button
+      onClick={(e) => followUser(user.id, e, setdate)}
+      className={`px-4 py-2 rounded-full transition-all ${
+        user.isFollowedByCurrentUser
+          ? "bg-red-500 text-white hover:bg-red-600"
+          : "bg-blue-500 text-white hover:bg-blue-600"
+      }`}
+    >
+      {user.isFollowedByCurrentUser ? "Unfollow" : "Follow"}
+    </button>
+  )
+}
               </div>
             ))
           ) : (

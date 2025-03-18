@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import {  Route, Routes, useNavigate } from "react-router-dom";
 import Home from "./Home";
 import Podcasts from "./maincomponents/Podcasts/Podcasts";
 import About from "./maincomponents/About/About";
@@ -11,16 +11,17 @@ import Verify from "./maincomponents/Verify/Verify";
 import Verifyforget from "./maincomponents/Verifyforget/Verifyforget";
 import Saved from "./components/Saved/Saved";
 import PodcastsView from "./Podcustcomonents/Podcastview/Podcastview";
-import Profile from "./components/Profile/Profile";
 import Profileusers from "./components/profileusers/Profileusers";
 import AddFriends from "./components/addFriends/addfriends";
+import Profile from "./components/Profile/Profle";
+import LearningForm from "./components/Profile/LearningForm";
 
 function Main(){
     return(
         <>
         <div className="main">
             <Routes>
-            <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/Home" element={<Home />} />
                 <Route path="/Podcasts" element={<Podcasts />} />
                 <Route path="/Podcasts/:id" element={<PodcastsView />} />
@@ -36,6 +37,7 @@ function Main(){
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/profileusers/:id" element={<Profileusers/>} />
                 <Route path="/AddFriends" element={<AddFriends/>} />
+                <Route path="/learningForm" element={<LearningForm/>} />
                 
             </Routes>
         </div>

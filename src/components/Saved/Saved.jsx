@@ -1,52 +1,70 @@
-import { React } from "react";
+import { React, useEffect, useState } from "react";
 import SavedItemCard from "./SavedItemCard";
 import "./Saved.css";
-import srcProfile from "./BEN-KIERMAN.jpg";
-import { FaBookmark, FaRegBell } from "react-icons/fa";
+import { FaBookmark } from "react-icons/fa";
 import Navbar from "../Navbar/Navbar";
+import axios from "axios";
+import { Domain, token } from './../../utels/consts';
+
 const Saved = () => {
-  const savedItems = [
-    {
-      id: 111,
-      name: "Jain",
-      date: "Dec 8",
-      content: "How to Build Your Frontend Apps 10x Faster !",
-      reactions: 30,
-      comments: 29,
-      profileImage: "https://i.pravatar.cc/46", // Replace with actual image
-    },
-    {
-      id: 222,
-      name: "Noor",
-      date: "Dec 5",
-      content: "What was your win this week?",
-      reactions: 26,
-      comments: 30,
-      profileImage: "https://i.pravatar.cc/48",
-    },
-    {
-      id: 333,
-      name: "Islam",
-      date: "Nov 30",
-      content: "Top AI Search Engines for Business and Startups in 2025",
-      reactions: 22,
-      comments: 18,
-      profileImage: "https://i.pravatar.cc/49",
-    },
-  ];
+  
+  const [savedItems, setSavedItems] = useState([]);
+
+  // ✅ Fetch saved posts
+  function getSaved() {
+    axios
+      .get(`${Domain}/api/SavedPost/saved-posts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        console.log("✅ Saved items:", res.data.data);
+        console.log(res.data.data)
+        setSavedItems(res.data.data || []);
+      })
+      .catch((err) => {
+        console.error("❌ Error fetching saved items:", err);
+      });
+  }
+
+  // ✅ Toggle Save/Unsave Post
+  function toggleSave(postId) {
+    axios
+      .post(`${Domain}/api/SavedPost/toggle-save/${postId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(() => {
+        console.log(`🔄 Toggled save for post ID: ${postId}`);
+        getSaved(); // Refresh saved items
+      })
+      .catch((err) => {
+        console.error("❌ Error toggling save:", err);
+      });
+  }
+
+  useEffect(() => {
+    getSaved();
+  }, []);
 
   return (
     <div className="saved-container">
-  <Navbar/>
-
+      <Navbar />
       <h2 className="saved-title">
         <FaBookmark style={{ color: "#3362C8" }} /> Saved items
       </h2>
 
       <div className="saved-items-list">
-        {savedItems.map((item, index) => (
-          <SavedItemCard key={item.id} {...item} />
-        ))}
+        {savedItems.length > 0 ? (
+          savedItems?.map((item) => (
+            <SavedItemCard
+              key={item.id}
+              {...item}
+              getSaved = {getSaved}
+              onToggleSave={() => toggleSave(item.id)} // Pass function to child component
+            />
+          ))
+        ) : (
+          <p>No saved items yet.</p>
+        )}
       </div>
     </div>
   );

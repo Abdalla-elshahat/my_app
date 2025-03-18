@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { TfiMoreAlt } from "react-icons/tfi";
 import { MapPin } from "lucide-react";
-import { followUserFromProfile, getfolloweing, getfollowers, getprofileuser } from "../../apicalls/follows";
+import { followUserFromProfile, getfolloweing, getfollowers, getpostsandsharebyuser, getprofile, getprofileuser } from "../../apicalls/follows";
 import { useParams } from "react-router-dom";
 import { Domain } from "../../utels/consts";
 import Popup from "./Popup";
@@ -12,10 +12,13 @@ function Profileusers() {
   const [followData, setFollowData] = useState([]);
   const [popupOpen, setPopupOpen] = useState(false); // حالة لفتح أو إغلاق البوب أب
   const [popupTitle, setPopupTitle] = useState("");
-
+  const [posts, setposts] = useState([]);
+  const [Profilelogin, setprofilelogin] = useState([]);
   useEffect(() => {
     if (id) {
       getprofileuser(id, setUser);
+      getpostsandsharebyuser(id, setposts); 
+      getprofile(id,setprofilelogin)
     }
   }, [id]);
 
@@ -87,40 +90,61 @@ function Profileusers() {
       </div>
    {/* Skills & Interests */}
    <div className="grid md:grid-cols-3 gap-6 mt-8">
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="font-semibold mb-2">Skills</h2>
-            <div className="flex flex-wrap gap-2">
-              {user.skills.length > 0 ? user.skills.map((skill,index) => (
-                <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                  {skill}
-                </span>
-              )) : <span className="text-gray-500">No skills listed</span>}
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="font-semibold mb-2">Currently Learning</h2>
-            <div className="flex flex-wrap gap-2">
-              {user.currentlyLearning.length > 0 ? user.currentlyLearning.map((skill,index) => (
-                <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                  {skill}
-                </span>
-              )) : <span className="text-gray-500">Not learning anything</span>}
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="font-semibold mb-2">My Interests</h2>
-            <div className="flex flex-wrap gap-2">
-              {user.interests.length > 0 ? user.interests.map(interest => (
-                <span key={interest} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                  {interest}
-                </span>
-              )) : <span className="text-gray-500">No interests listed</span>}
-            </div>
-          </div>
-        </div>
+  <div className="bg-white p-4 rounded-lg shadow-sm">
+    <h2 className="font-semibold mb-2">Skills</h2>
+    <div className="flex flex-wrap gap-2">
+      {user.skills && user.skills.length > 0 ? (
+        user.skills.map((skill, index) => (
+          <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+            {skill}
+          </span>
+        ))
+      ) : (
+        <span className="text-gray-500">No skills listed</span>
+      )}
+    </div>
+  </div>
+
+{/* Education Section */}
+<div className="bg-white p-4 rounded-lg shadow-sm mt-6">
+  <h2 className="font-semibold mb-2">Education</h2>
+  {user.education && user.education.length > 0 ? (
+    user.education.map((edu) => (
+      <div key={edu.id} className="pb-3 mb-3">
+        <p className=" text-gray-600 text-sm"><span className="font-semibold text-black">Collage: </span>{edu.school}</p>
+        <p className="text-gray-600 text-sm"><span className="font-semibold  text-black">From-To: </span>{new Date(edu.startDte).getFullYear()} - {new Date(edu.endDte).getFullYear()}</p>
+        <p className="text-gray-500 text-sm"><span className="font-semibold  text-black">degree: </span> {edu.degree}</p>
+        <p className="text-gray-500 text-sm"><span className="font-semibold  text-black">GPA: </span> {edu.grade}</p>
+        {edu.description && <p className="text-gray-600 text-sm mt-1">
+          <span className="font-semibold  text-black">Description :</span>
+          {edu.description.length>30?edu.description.substring(0,30)+"...":edu.description}
+          </p>}
+      </div>
+    ))
+  ) : (
+    <span className="text-gray-500">No education details available</span>
+  )}
+</div>
+
+  <div className="bg-white p-4 rounded-lg shadow-sm">
+    <h2 className="font-semibold mb-2">My Interests</h2>
+    <div className="flex flex-wrap gap-2">
+      {user.interests && user.interests.length > 0 ? (
+        user.interests.map((interest, index) => (
+          <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+            {interest}
+          </span>
+        ))
+      ) : (
+        <span className="text-gray-500">No interests listed</span>
+      )}
+    </div>
+  </div>
+</div>
+
       {/* Popup for Followers/Following */}
       {popupOpen && (
-        <Popup title={popupTitle} data={followData} setdate={setFollowData} onClose={() => setPopupOpen(false)}/>
+        <Popup title={popupTitle} data={followData} setdate={setFollowData} onClose={() => setPopupOpen(false)} Profilelogin={Profilelogin}/>
       )}
     </div>
   );

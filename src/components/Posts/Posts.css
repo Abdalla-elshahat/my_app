@@ -83,8 +83,8 @@
 /* Icons styling */
 .right {
   display: flex;
-  gap: 25px;
-  font-size: 25px;
+  gap: 10px;
+  font-size: 20px;
   color: #666;
   cursor: pointer;
 }

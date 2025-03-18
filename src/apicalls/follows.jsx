@@ -178,3 +178,53 @@ import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
       toast.error("Failed to fetch user data");
     }
   };
+
+  export const getpostsandsharebyuser = async (id, setposts) => {
+    try {
+      const response = await fetch(`${Domain}/api/Share/posts-with-shares/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(`Error fetching user: ${errorData.message || "Unknown error"}`);
+        return;
+      }
+  
+      const result = await response.json();
+      setposts(result.data);
+    //   toast.success(result.message);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      toast.error("Failed to fetch user data");
+    }
+  };
+
+  export const getprofile = async (id, setprofile) => {
+    try {
+      const response = await fetch(`${Domain}/api/Profile/UserProfile`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(`Error fetching user: ${errorData.message || "Unknown error"}`);
+        return;
+      }
+  
+      const result = await response.json();
+      setprofile(result.data);
+    //   toast.success(result.message);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      toast.error("Failed to fetch user data");
+    }
+  };
