@@ -7,9 +7,7 @@ import axios from "axios";
 import { Domain, token } from './../../utels/consts';
 
 const Saved = () => {
-  
   const [savedItems, setSavedItems] = useState([]);
-
   // ✅ Fetch saved posts
   function getSaved() {
     axios

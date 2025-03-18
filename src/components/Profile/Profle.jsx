@@ -2,221 +2,36 @@ import { React, useEffect, useRef, useState } from "react";
 import "./Profile.css";
 import imgSrc from "./imageProfile/BEN-KIERMAN.jpg";
 import { TfiMoreAlt } from "react-icons/tfi";
-import {
-  MessageCircle,
-  Heart,
-  Share2,
-  MapPin,
-  UserCircle2,
-} from "lucide-react";
-import axios from "axios";
-import { Domain, token } from "../../utels/consts";
+import {MapPin,} from "lucide-react";
+import { Domain } from "../../utels/consts";
 import { FiCamera } from "react-icons/fi";
 import Select from "react-select";
 import { programmingSkills } from "../../utels/data.ts";
 import { FaPen } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
+import { getProfile, getSharedPosts, updatePhoto, updateProfile } from "../../apicalls/profile.jsx";
+import PopupModal from "./popupintersts.jsx";
 function Profile() {
-  const [showDetails, setShowDetails] = useState(true);
-
   const [details, setdetails] = useState({});
-
-  const [skills, setskills] = useState([]);
-
   const [NewPhot, setNewPhot] = useState("");
-
   const [isOpen, setIsOpen] = useState(false);
-
   const [popup, setPopup] = useState(false);
-
   const [popupInterst, setPopupInterst] = useState(false);
-
   const [popupSkills, setPopupSkills] = useState(false);
-
   const [selectedInterests, setSelectedInterests] = useState([]);
-
   const [customAcademicInterest, setCustomAcademicInterest] = useState("");
-  const [customExtracurricularInterest, setCustomExtracurricularInterest] =
-    useState("");
-
+  const [customExtracurricularInterest, setCustomExtracurricularInterest] =useState("");
   const [sharedPosts, setsharedPosts] = useState([]);
-
   const [clicked, setclicked] = useState(false);
-
   const [isVisible, setIsVisible] = useState(true);
-
-  const [previewUrl, setPreviewUrl] = useState(
-    details?.pictureUrl ? `${Domain}${details.pictureUrl}` : ""
-  );
-
-  const fileInputRef = useRef(null);
-  const [learningId, setLearningId] = useState({
-    school: "Tanta University",
-    degree: "Bachelor of Science - BS",
-    startDte: "2021-09-01T00:00:00.000Z",
-    endDte: "2025-07-01T00:00:00.000Z",
-    grade: 4,
-    activities: "",
-    description:
-      "I'm currently a student at Faculty of Computers and Informatics, Tanta University. I'm interested in Computer Science and Problem Solving.",
-  });
-
-  // const userToken = Cookies.get("token"); // Get token from cookies (if required)
-
+  const [learning, setLearning] = useState({});
+  const [selectedSkills, setSelectedSkills] = useState([]);
   const [profileData, setProfileData] = useState({
     displayName: details.displayName || "",
     address: details.address || "",
     job: details.job || "",
-    skills: details.skills || [],
-    learning: details.currentlyLearning || [],
-
-    interests: details.interests || [],
   });
-
-  useEffect(() => {
-    if (details && Object.keys(details).length > 0) {
-      setProfileData({
-        displayName: details.displayName || "",
-        address: details.address || "",
-        job: details.job || "",
-        skills: details.skills ? [...new Set(details.skills)] : [],
-        learning:
-          details.currentlyLearning?.filter((item) => item.trim() !== "") || [],
-        interests: details.interests || [],
-      });
-    }
-  }, [details]);
-
-  function getProfile() {
-    axios
-      .get(`${Domain}/api/Profile/UserProfile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
-        setdetails(res.data.data);
-        if (res.data.data.pictureUrl) {
-          setNewPhot(`${Domain}${res.data.data.pictureUrl}`); // Set image URL from backend
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching profile:", err);
-      });
-  }
-
-  function getSharedPosts() {
-    axios
-      .get(`${Domain}/api/Share/user-posts-with-shares`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Assuming `token` is defined
-        },
-      })
-      .then((res) => {
-        setsharedPosts(res.data.data);
-        // console.log(res.data.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching profile:", err);
-      });
-  }
-
-  function updateProfile(e) {
-    e.preventDefault();
-
-    const updatedData = {
-      ...profileData,
-      skills: Array.isArray(profileData.skills) ? profileData.skills : [],
-      learning: Array.isArray(profileData.learning) ? profileData.learning : [],
-      interests: Array.isArray(profileData.interests)
-        ? profileData.interests
-        : [],
-    };
-
-    axios
-      .put(`${Domain}/api/Profile/update-profile`, updatedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        console.log("Profile Updated:", res.data);
-        getProfile(); // Refresh profile
-        setPopup(false);
-      })
-      .catch((error) => {
-        console.error("Error updating profile:", error);
-      });
-  }
-
-  function handleFileChange(e) {
-    const file = e.target.files[0];
-
-    if (!file) return;
-
-    const previewUrl = URL.createObjectURL(file);
-    setNewPhot(previewUrl);
-
-    updatePhoto(file); // ✅ Directly pass `file` to `updatePhoto()`
-  }
-
-  // Inside the useEffect for initial load
-  useEffect(() => {
-    const savedImageUrl = localStorage.getItem("profileImage");
-    if (savedImageUrl) {
-      setNewPhot(savedImageUrl); // Retrieve from localStorage
-    }
-    getProfile();
-    getSharedPosts();
-  }, []);
-
-  function updatePhoto(file) {
-    if (!file) {
-      console.error("No file selected.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("Picture", file); // ✅ API expects "Picture"
-
-    axios
-      .put(`${Domain}/api/User/Updatepicture`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Do NOT set "Content-Type" manually, Axios will set it automatically
-        },
-      })
-      .then((res) => {
-        console.log("✅ Upload Success:", res.data);
-        setNewPhot();
-        getProfile(); // Refresh profile
-
-        // ✅ Fetch shared posts again to get updated images
-        getSharedPosts();
-
-        // ✅ Update sharedPosts state with new image
-        setsharedPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.user.id === details.id // Ensure we're updating the correct user
-              ? {
-                  ...post,
-                  user: {
-                    ...post.user,
-                    pictureUrl: `${Domain}${res.data.pictureUrl}`,
-                  },
-                }
-              : post
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("❌ Upload Failed:", error.response?.data || error);
-      });
-  }
-
+  const fileInputRef = useRef(null);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({
@@ -227,36 +42,25 @@ function Profile() {
           : value,
     }));
   };
-
-  // const handleSkillsChange = (selectedOptions) => {
-  //   const updatedSkills = selectedOptions.map(option => ({
-  //     value: option.value||"",
-  //     label: option.label||"",
-  //     image: option.image||"",
-  //   }));
-  //   setskills(updatedSkills);
-
-  // }
-
-  const removeSkill = (skillToRemove) => {
-    setskills(skills.filter((skill) => skill.value !== skillToRemove.value));
-  };
-
-  useEffect(function () {
-    const savedImageUrl = localStorage.getItem("profileImage");
-    if (savedImageUrl) {
-      setNewPhot(savedImageUrl); // Retrieve from localStorage
+  useEffect(() => {
+    if (details && Object.keys(details).length > 0) {
+      setProfileData({
+        displayName: details.displayName || "",
+        address: details.address || "",
+        job: details.job || "",
+      });
     }
-    getProfile();
+    console.log(details)
+  }, [details]);
 
-    getSharedPosts();
+  useEffect(() => {
+    getProfile(setdetails,setNewPhot,setLearning);
+    getSharedPosts(setsharedPosts);
   }, []);
 
-  // ✅ Ensure `sharedPosts` updates when profile picture changes
   useEffect(() => {
     if (details.pictureUrl) {
       setNewPhot(`${Domain}${details.pictureUrl}`);
-
       setsharedPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.user.id === details.id
@@ -273,12 +77,9 @@ function Profile() {
     }
   }, [details.pictureUrl]);
 
-  useEffect(
-    function () {
-      setNewPhot(NewPhot);
-    },
-    [NewPhot]
-  );
+  useEffect(()=>{
+    setNewPhot(NewPhot);
+  },[NewPhot]);
 
   const academicSubjects = [
     "Mathematics",
@@ -297,13 +98,7 @@ function Profile() {
     "Clubs/Organizations",
   ];
 
-  // Load interests from local storage when component mounts
-  useEffect(() => {
-    const savedInterests = localStorage.getItem("selectedInterests");
-    if (savedInterests) {
-      setSelectedInterests(JSON.parse(savedInterests));
-    }
-  }, []);
+
 
   const handleCheckboxChange = (interest) => {
     setSelectedInterests((prev = []) => {
@@ -317,65 +112,39 @@ function Profile() {
         (item) => item?.trim() !== ""
       );
 
-      localStorage.setItem(
-        "selectedInterests",
-        JSON.stringify(filteredInterests)
-      );
 
       return filteredInterests;
     });
   };
 
-  const handleSubmit = () => {
-    if (customAcademicInterest.trim()) {
-      const updatedInterests = [
-        ...selectedInterests,
-        customAcademicInterest.trim(),
-      ].filter(
-        (item) => item !== "" // ✅ Ensure no empty values are saved
-      );
+  // const handleSubmit = () => {
+  //   if (customAcademicInterest.trim()) {
+  //     const updatedInterests = [
+  //       ...selectedInterests,
+  //       customAcademicInterest.trim(),
+  //     ].filter(
+  //       (item) => item !== "" // ✅ Ensure no empty values are saved
+  //     );
 
-      if (customExtracurricularInterest.trim()) {
-        const updatedInterests = [
-          ...selectedInterests,
-          customExtracurricularInterest.trim(),
-        ].filter(
-          (item) => item !== "" // ✅ Ensure no empty values are saved
-        );
+  //     if (customExtracurricularInterest.trim()) {
+  //       const updatedInterests = [
+  //         ...selectedInterests,
+  //         customExtracurricularInterest.trim(),
+  //       ].filter(
+  //         (item) => item !== "" // ✅ Ensure no empty values are saved
+  //       );
 
-        setSelectedInterests(updatedInterests);
-        localStorage.setItem(
-          "selectedInterests",
-          JSON.stringify(updatedInterests)
-        );
-        setCustomAcademicInterest("");
-        setCustomExtracurricularInterest("");
-      }
-      setPopupInterst(false);
-    }
-  };
+  //       setSelectedInterests(updatedInterests);
+  //       setCustomAcademicInterest("");
+  //       setCustomExtracurricularInterest("");
+  //     }
+  //     setPopupInterst(false);
+  //   }
+  // };
 
   useEffect(() => {
     handleCheckboxChange();
   }, []);
-
-
-  const [selectedSkills, setSelectedSkills] = useState([]);
-
-  // Load skills from localStorage on mount
-  useEffect(() => {
-    const storedSkills = localStorage.getItem("selectedSkills");
-    if (storedSkills) {
-      setSelectedSkills(JSON.parse(storedSkills));
-    }
-  }, []);
-
-  // Save skills to localStorage whenever they change
-  useEffect(() => {
-    if (selectedSkills.length > 0) {
-      localStorage.setItem("selectedSkills", JSON.stringify(selectedSkills));
-    }
-  }, [selectedSkills]);
 
   // Handle skill selection
   const handleSkillsChange = (selectedOptions) => {
@@ -431,7 +200,7 @@ function Profile() {
             if (file) {
               const previewUrl = URL.createObjectURL(file);
               setNewPhot(previewUrl);
-              updatePhoto(file); // Pass file directly instead of using state
+              updatePhoto(file,setNewPhot,setsharedPosts,details); // Pass file directly instead of using state
             }
           }}
           className="hidden"
@@ -458,21 +227,8 @@ function Profile() {
             }}
           >
             <div className="flex items-center space-x-3">
-              <button
-                type="button"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Follow
-              </button>
-
               <div>
-                <button
-                  onClick={function () {
-                    setclicked(true);
-                  }}
-                  className="dotts_btn"
-                >
-                  {" "}
+                <button className="dotts_btn" onClick={()=> { setclicked(true)}} >
                   <TfiMoreAlt />{" "}
                 </button>
 
@@ -517,7 +273,7 @@ function Profile() {
 
                           {/* Form */}
                           <form
-                            onSubmit={updateProfile}
+                            onSubmit={(e)=>updateProfile(e,profileData,setPopup)}
                             className="p-4 overflow-auto"
                           >
                             <div className="grid gap-4 mb-4 grid-cols-2">
@@ -801,25 +557,25 @@ function Profile() {
               {
                 <div className="mt-4">
                   <p>
-                    <strong>School:</strong> {learningId?.school}
+                    <strong>School:</strong> {learning?.school}
                   </p>
                   <p>
-                    <strong>Degree:</strong> {learningId?.degree}
+                    <strong>Degree:</strong> {learning?.degree}
                   </p>
                   <p>
-                    <strong>Start Date:</strong> {learningId?.startDte}
+                    <strong>Start Date:</strong> {learning?.startDte}
                   </p>
                   <p>
-                    <strong>End Date:</strong> {learningId?.endDte}
+                    <strong>End Date:</strong> {learning?.endDte}
                   </p>
                   <p>
-                    <strong>Grade:</strong> {learningId?.grade}
+                    <strong>Grade:</strong> {learning?.grade}
                   </p>
                   <p>
-                    <strong>Activities:</strong> {learningId?.activities}
+                    <strong>Activities:</strong> {learning?.activities}
                   </p>
                   <p>
-                    <strong>Description:</strong> {learningId?.description}
+                    <strong>Description:</strong> {learning?.description}
                   </p>
                 </div>
               }
@@ -833,7 +589,6 @@ function Profile() {
           </div>
 
           {/* Interests */}
-
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <h2 className="font-semibold mb-2">My Interests</h2>
             <div className="flex flex-wrap gap-2 relative">
@@ -868,214 +623,22 @@ function Profile() {
             </div>
 
             {/* Popup Modal */}
-            {popupInterst && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="max-w-lg w-full bg-white p-4 rounded-lg shadow-lg relative">
-                  {/* Close Button */}
-                  <button
-                    onClick={() => setPopupInterst(false)}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-black"
-                  >
-                    ✖
-                  </button>
-
-                  <h2 className="text-lg font-semibold mb-2">
-                    Area(s) of Interest:
-                  </h2>
-
-                  {/* Academic Subjects */}
-                  <div className="mb-4">
-                    <p className="font-medium">Academic Subjects:</p>
-                    <div className="space-y-2 mt-2">
-                      {academicSubjects.map((subject, index) => (
-                        <label
-                          key={index}
-                          className="flex items-center space-x-2"
-                        >
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded"
-                            checked={selectedInterests.includes(subject)}
-                            onChange={() => handleCheckboxChange(subject)}
-                          />
-
-                          <span>{subject}</span>
-                        </label>
-                      ))}
-
-                      {/* Other Option with Text Input */}
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded"
-                          checked={customAcademicInterest.length > 0}
-                          onChange={() =>
-                            setCustomAcademicInterest(
-                              customAcademicInterest ? "" : " "
-                            )
-                          }
-                        />
-                        <span>Other</span>
-                      </label>
-
-                      {customAcademicInterest.length > 0 && (
-                        <input
-                          type="text"
-                          value={customAcademicInterest}
-                          onChange={(e) =>
-                            setCustomAcademicInterest(e.target.value)
-                          }
-                          placeholder="Please type another option here"
-                          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Extracurricular Activities */}
-                  <div className="p-4 bg-gray-100 rounded-lg">
-                    <p className="font-medium">Extracurricular Activities:</p>
-                    <div className="space-y-2 mt-2">
-                      {extracurricularActivities.map((activity, index) => (
-                        <label
-                          key={index}
-                          className="flex items-center space-x-2"
-                        >
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded"
-                            checked={selectedInterests.includes(activity)}
-                            onChange={() => handleCheckboxChange(activity)}
-                          />
-                          <span>{activity}</span>
-                        </label>
-                      ))}
-
-                      {/* Other Option with Text Input */}
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded"
-                          checked={customExtracurricularInterest.length > 0}
-                          onChange={() =>
-                            setCustomExtracurricularInterest(
-                              customExtracurricularInterest ? "" : " "
-                            )
-                          }
-                        />
-                        <span>Other</span>
-                      </label>
-
-                      {customExtracurricularInterest.length > 0 && (
-                        <input
-                          type="text"
-                          value={customExtracurricularInterest}
-                          onChange={(e) =>
-                            setCustomExtracurricularInterest(e.target.value)
-                          }
-                          placeholder="Please type another option here"
-                          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    onClick={() => {
-                      if (customAcademicInterest.trim()) {
-                        handleCheckboxChange(customAcademicInterest.trim());
-                        setCustomAcademicInterest("");
-                      }
-                      if (customExtracurricularInterest.trim()) {
-                        handleCheckboxChange(
-                          customExtracurricularInterest.trim()
-                        );
-                        setCustomExtracurricularInterest("");
-                      }
-                      setPopupInterst(false);
-                    }}
-                    className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </div>
-            )}
+            <PopupModal
+        isOpen={popupInterst}
+        onClose={() => setPopupInterst(false)}
+        academicSubjects={academicSubjects}
+        extracurricularActivities={extracurricularActivities}
+        selectedInterests={selectedInterests}
+        handleCheckboxChange={handleCheckboxChange}
+        customAcademicInterest={customAcademicInterest}
+        setCustomAcademicInterest={setCustomAcademicInterest}
+        customExtracurricularInterest={customExtracurricularInterest}
+        setCustomExtracurricularInterest={setCustomExtracurricularInterest}
+      />
           </div>
         </div>
-
         {/* Posts */}
-        <div className="mt-8 space-y-4">
-          {sharedPosts?.map((sharedPost) => {
-            return (
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <div className="flex items-center gap-3 mb-3 ">
-                  {/* <UserCircle2 className="w-8 h-8" /> */}
-                  <div className="bg-red-500 rounded-full">
-                    <img
-                      src={
-                        sharedPost.user.id === details.id
-                          ? NewPhot
-                          : `${Domain}${sharedPost.user.pictureUrl}`
-                      }
-                      alt={sharedPost.id}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    {/* <img src ={`${Domain}${sharedPost.user.pictureUrl}`}  alt={sharedPost.id} className=" w-10  h-10 rounded-full object-cover"/> */}
-                  </div>
-
-                  <div>
-                    <div className="font-medium">
-                      {sharedPost.user.displayName}
-                    </div>
-
-                    <div className="text-gray-500 text-sm">
-                      {new Date(sharedPost.postDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          weekday: "long", // Full day name (e.g., Monday)
-                          day: "numeric", // Day number (e.g., 13)
-                        }
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {showDetails && (
-                  <h3 className="font-medium mb-3 ">{sharedPost.title}</h3>
-                )}
-
-                {sharedPost.images?.map((photo, index) => (
-                  <img
-                    key={index}
-                    src={`${Domain}${photo}`}
-                    alt="Saved post"
-                    className="w-full max-w-[500px] h-auto object-cover rounded-lg shadow-md"
-                  />
-                ))}
-
-                <button
-                  className="text-blue-600"
-                  onClick={() => setShowDetails((h) => !h)}
-                >
-                  {showDetails ? "Hide" : "Show"} details
-                </button>
-                <div className="flex items-center gap-6 text-gray-500 text-sm">
-                  <span className="flex items-center gap-1">
-                    <Heart size={16} /> {sharedPost.likesCount} reactions
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageCircle size={16} /> {sharedPost.commentCount}{" "}
-                    comments
-                  </span>
-                  <button className="flex items-center gap-1 hover:text-gray-700">
-                    <span>{sharedPost.sharesCount}</span> <Share2 size={16} />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/**/}
       </div>
     </div>
   );

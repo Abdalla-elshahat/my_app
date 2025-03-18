@@ -61,7 +61,6 @@ const SavedItemCard = ({
             } else {
               updatedPosts[postId] = true; // Add if not saved
             }
-            localStorage.setItem("savedPosts", JSON.stringify(updatedPosts));
             return updatedPosts;
           });
     
