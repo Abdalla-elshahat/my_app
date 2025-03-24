@@ -4,62 +4,28 @@ import { Search, Bell, Menu, X } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { Logout } from "../../apicalls/auth";
-import axios from "axios";
 import { Domain} from "../../utels/consts";
 import Cookies from "js-cookie";
+import { getEmail, getProfile } from "../../apicalls/navbar";
+import Notification from "./notifactions"
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const [userName, setUserName] = useState("")
   const [userPicture, setUserPicture] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const token =Cookies.get("token")
+  const navigate = useNavigate();
+  const [notifications, setNotifications] = useState(false);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  function getProfile() {
-    axios
-      .get(`${Domain}/api/Profile/UserProfile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        console.log(res.data.data.displayName)
-        console.log(res.data.data.pictureUrl)
 
-        setUserName(res.data.data.displayName)
-
-        setUserPicture(res.data.data.pictureUrl)
-
-      })
-      .catch((err) => {
-        console.error("Error fetching profile:", err);
-      });
-  }
-// GetCurrentUser endpoint
-  function getEmail() {
-    axios
-      .get(`${Domain}/api/Account/GetCurrentUser`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-
-        console.log(res.data.email)
-        setUserEmail(res.data.email)
-      })
-      .catch((err) => {
-        console.error("Error fetching profile:", err);
-      });
-  }
   useEffect(() => {
-      getProfile();
-      getEmail();
+      getProfile(setUserName, setUserPicture);
+      getEmail(setUserEmail);
   }, []);
 
   return (
@@ -103,9 +69,12 @@ function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {token ? (
                 <>
-                  <button className="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none">
-                    <Bell className="h-6 w-6" />
-                  </button>
+             <div className="relative"> {/* جعل العنصر الأب نسبيًا */}
+            <button onClick={() => setNotifications(!notifications)} className="p-1 rounded-full  text-gray-500 hover:text-gray-700 focus:outline-none">
+            <Bell className="h-6 w-6" />
+            </button>
+            {notifications && <Notification />}
+           </div>
                   <div className="flex items-center">
                   <Link to={"/profile"}> <img
           className="h-10 w-10 rounded-full ml-2"

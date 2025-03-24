@@ -117,30 +117,6 @@ function Profile() {
     });
   };
 
-  // const handleSubmit = () => {
-  //   if (customAcademicInterest.trim()) {
-  //     const updatedInterests = [
-  //       ...selectedInterests,
-  //       customAcademicInterest.trim(),
-  //     ].filter(
-  //       (item) => item !== "" // ✅ Ensure no empty values are saved
-  //     );
-
-  //     if (customExtracurricularInterest.trim()) {
-  //       const updatedInterests = [
-  //         ...selectedInterests,
-  //         customExtracurricularInterest.trim(),
-  //       ].filter(
-  //         (item) => item !== "" // ✅ Ensure no empty values are saved
-  //       );
-
-  //       setSelectedInterests(updatedInterests);
-  //       setCustomAcademicInterest("");
-  //       setCustomExtracurricularInterest("");
-  //     }
-  //     setPopupInterst(false);
-  //   }
-  // };
 
   useEffect(() => {
     handleCheckboxChange();

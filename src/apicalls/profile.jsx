@@ -102,7 +102,7 @@ export function updatePhoto(file,setNewPhot,setsharedPosts,details) {
       .catch((error) => {
         console.error("❌ Upload Failed:", error.response?.data || error);
       });
-  }
+}
 export  function GetLearningByUserId(id,setLearningData,setFormData,setErrorMessage) {
     axios.get(`${Domain}/api/Learning/${id}`, {
         headers: {
@@ -119,7 +119,7 @@ export  function GetLearningByUserId(id,setLearningData,setFormData,setErrorMess
         console.error("❌ Error fetching learning data:", err);
         setErrorMessage("Failed to fetch learning data.");
       });
-  }
+}
 export function sendLearning(school,degree,startDte,endDte,grade,activities,description,about,setErrorMessage) {
     const formattedData = {
       school,
@@ -145,4 +145,4 @@ export function sendLearning(school,degree,startDte,endDte,grade,activities,desc
         console.error("❌ Error:", err);
         setErrorMessage(err.response?.data?.message || err.message);
       });
-  }
+}

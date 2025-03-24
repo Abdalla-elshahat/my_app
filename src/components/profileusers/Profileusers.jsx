@@ -1,11 +1,10 @@
 import { React, useEffect, useState } from "react";
-import { TfiMoreAlt } from "react-icons/tfi";
 import { MapPin } from "lucide-react";
 import { followUserFromProfile, getfolloweing, getfollowers, getpostsandsharebyuser, getprofile, getprofileuser } from "../../apicalls/follows";
 import { useParams } from "react-router-dom";
 import { Domain } from "../../utels/consts";
 import Popup from "./Popup";
-
+import Displayimg from "./displayimg";
 function Profileusers() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -14,6 +13,7 @@ function Profileusers() {
   const [popupTitle, setPopupTitle] = useState("");
   const [posts, setposts] = useState([]);
   const [Profilelogin, setprofilelogin] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     if (id) {
       getprofileuser(id, setUser);
@@ -30,11 +30,7 @@ function Profileusers() {
       <div className="relative">
         <div className="h-48 bg-blue-600 w-full"></div>
         <div className="container absolute w-20 h-20 left-12 max-md:left-1/2 max-md:right-1/2 -bottom-15 rounded-full overflow-hidden border-white bg-gray-200 -translate-y-1/2 -translate-x-1/2">
-          <img
-            src={`${Domain}/${user.pictureUrl}` || "/default-profile.png"}
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
+          <img  onClick={() => setIsOpen(true)}src={`${Domain}/${user.pictureUrl}` || "/default-profile.png"} alt="Profile" className="w-full h-full object-cover cursor-pointer"/>
         </div>
       </div>
 
@@ -53,7 +49,7 @@ function Profileusers() {
               <button onClick={(e)=>followUserFromProfile(user.id,e,setUser)} className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-full text-sm px-5 py-2.5">
                 {user.isFollowedByCurrentUser ? "Unfollow" : "Follow"}
               </button>
-              <TfiMoreAlt />
+              {/* <TfiMoreAlt /> */}
             </div>
             <div className="flex gap-8">
             <div className="text-center cursor-pointer"
@@ -141,11 +137,14 @@ function Profileusers() {
     </div>
   </div>
 </div>
-
       {/* Popup for Followers/Following */}
       {popupOpen && (
         <Popup title={popupTitle} data={followData} setdate={setFollowData} onClose={() => setPopupOpen(false)} Profilelogin={Profilelogin}/>
       )}
+      {/* عرض صوره البروفيل */}
+      {isOpen && (
+          <Displayimg setIsOpen={setIsOpen} user={user}/>
+          )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 
 .for-you {
     margin: 20px 0;
+    cursor: pointer;
   }
   .for-you h3{
     width: 294px;
