@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./TopShows.css";
 import Catpodcast from "../catpodcasts";
 import { gettopshows } from "../../apicalls/podcasts";

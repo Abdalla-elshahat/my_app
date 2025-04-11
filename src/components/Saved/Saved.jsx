@@ -5,9 +5,10 @@ import { FaBookmark } from "react-icons/fa";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { Domain, token } from './../../utels/consts';
-
+import Savedpodcast from "./savedpodcasts";
 const Saved = () => {
   const [savedItems, setSavedItems] = useState([]);
+  const [isclose, setisclose] = useState(false);
   // ✅ Fetch saved posts
   function getSaved() {
     axios
@@ -38,7 +39,6 @@ const Saved = () => {
         console.error("❌ Error toggling save:", err);
       });
   }
-
   useEffect(() => {
     getSaved();
   }, []);
@@ -47,9 +47,9 @@ const Saved = () => {
     <div className="saved-container">
       <Navbar />
       <h2 className="saved-title">
-        <FaBookmark style={{ color: "#3362C8" }} /> Saved items
+      {isclose && <Savedpodcast onClose={() => setisclose(false)} />}
+       <FaBookmark style={{ color: "#3362C8",cursor:"pointer"}}  onClick={()=>setisclose(!isclose)}/> Saved podcast
       </h2>
-
       <div className="saved-items-list">
         {savedItems.length > 0 ? (
           savedItems?.map((item) => (

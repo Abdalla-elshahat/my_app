@@ -11,7 +11,7 @@ function Notification() {
     getNotifications(setNotifications);
   }, []);
   return (
-    <div className="w-full max-w-md mx-auto p-4 bg-white rounded-lg shadow-lg">
+    <div className="w-max max-w-md mx-auto p-4 bg-white rounded-lg shadow-lg absolute md:-left-40 z-50 md:mt-5 sm:right-2 sm:mt-12">
       <h2 className="text-lg font-semibold mb-4">Notifications</h2>
       <div className="space-y-2">
         {notifications.length === 0 ? (

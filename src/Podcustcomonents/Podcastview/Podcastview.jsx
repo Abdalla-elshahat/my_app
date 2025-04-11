@@ -1,20 +1,22 @@
-import { FaBookmark, FaBackward, FaForward } from "react-icons/fa";
+import {FaBookmark,FaBackward,FaForward} from "react-icons/fa";
 import { FaPlay } from "react-icons/fa6";
 import { CgPlayPause } from "react-icons/cg";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { MdOutlineForward10 ,MdOutlineReplay10} from "react-icons/md";
-import { RunPodcast } from "../../apicalls/podcasts";
+import { MdOutlineForward10, MdOutlineReplay10 } from "react-icons/md";
+import { RunPodcast, saveandunsaved } from "../../apicalls/podcasts";
+import { ToastContainer } from "react-toastify";
 export default function PodcastsView() {
   const [isPlay, setIsPlay] = useState(false);
   const [data, setData] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [Saved, setSaved] = useState([]);
   const { id } = useParams();
   const audioRef = useRef(new Audio());
 
   useEffect(() => {
-    RunPodcast(id,setData,audioRef,setDuration);
+    RunPodcast(id, setData, audioRef, setDuration);
     // تحديث الوقت أثناء التشغيل
     const updateTime = () => setCurrentTime(audioRef.current.currentTime);
     audioRef.current.addEventListener("timeupdate", updateTime);
@@ -55,14 +57,20 @@ export default function PodcastsView() {
   };
 
   if (!data) {
-    return <p className="text-center text-gray-500 mt-10">⏳ Loading podcast...</p>;
+    return (
+      <p className="text-center text-gray-500 mt-10">⏳ Loading podcast...</p>
+    );
   }
 
   return (
     <div className="max-w-sm mx-auto bg-white shadow-lg rounded-b-2xl rounded-t-2xl overflow-hidden mt-10">
+      <ToastContainer/>
       <div className="relative bg-blue-600 text-white py-6 px-4 rounded-b-2xl text-center pb-20">
         <h2 className="text-sm font-semibold">Podcast Details</h2>
-        <FaBookmark className="absolute top-4 right-4 text-lg cursor-pointer" />
+        <FaBookmark
+          onClick={() => saveandunsaved(id,setSaved)}
+          className="absolute top-4 right-4 text-lg cursor-pointer"
+        />
       </div>
 
       <div className="relative flex justify-center">
@@ -97,13 +105,32 @@ export default function PodcastsView() {
 
         {/* أزرار التحكم */}
         <div className="flex justify-center gap-6 items-center mt-3">
-          <FaBackward className="text-2xl text-gray-600 cursor-pointer" onClick={handleSkipBackward} />
-          <MdOutlineReplay10 className="text-2xl text-gray-600 cursor-pointer" onClick={handleSkipBackward} />
-          <div className="bg-blue-600 text-white p-4 rounded-full cursor-pointer" onClick={togglePlay}>
-            {isPlay ? <CgPlayPause className="text-2xl" /> : <FaPlay className="text-2xl" />}
+          <FaBackward
+            className="text-2xl text-gray-600 cursor-pointer"
+            onClick={handleSkipBackward}
+          />
+          <MdOutlineReplay10
+            className="text-2xl text-gray-600 cursor-pointer"
+            onClick={handleSkipBackward}
+          />
+          <div
+            className="bg-blue-600 text-white p-4 rounded-full cursor-pointer"
+            onClick={togglePlay}
+          >
+            {isPlay ? (
+              <CgPlayPause className="text-2xl" />
+            ) : (
+              <FaPlay className="text-2xl" />
+            )}
           </div>
-          <MdOutlineForward10 className="text-2xl text-gray-600 cursor-pointer" onClick={handleSkipForward} />
-          <FaForward className="text-2xl text-gray-600 cursor-pointer" onClick={handleSkipForward} />
+          <MdOutlineForward10
+            className="text-2xl text-gray-600 cursor-pointer"
+            onClick={handleSkipForward}
+          />
+          <FaForward
+            className="text-2xl text-gray-600 cursor-pointer"
+            onClick={handleSkipForward}
+          />
         </div>
       </div>
     </div>

@@ -70,7 +70,7 @@ function Navbar() {
               {token ? (
                 <>
              <div className="relative"> {/* جعل العنصر الأب نسبيًا */}
-            <button onClick={() => setNotifications(!notifications)} className="p-1 rounded-full  text-gray-500 hover:text-gray-700 focus:outline-none">
+            <button onClick={() => setNotifications(!notifications)} className="p-1 rounded-full  text-gray-500 hover:text-gray-700 focus:outline-none relative">
             <Bell className="h-6 w-6" />
             </button>
             {notifications && <Notification />}
@@ -222,9 +222,10 @@ function Navbar() {
 
 
       <div className="auth-buttons">
-      <button className="p-1 rounded-full text-gray-500 hover:text-gray-700 focus:outline-none">
-                    <Bell className="h-6 w-6" />
-                  </button>
+      <button onClick={() => setNotifications(!notifications)} className="p-1 rounded-full  text-gray-500 hover:text-gray-700 focus:outline-none relative">
+            <Bell className="h-6 w-6" />
+            </button>
+            {notifications && <Notification />}
 
                     <button className="login-btn py-[4px] px-[18px]">
                       <Link

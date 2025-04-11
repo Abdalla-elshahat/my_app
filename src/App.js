@@ -4,6 +4,7 @@ import Main from "./main";
 import { token } from "./utels/consts";
 import { useNavigate } from "react-router-dom";
 import { SavedPostsProvider } from "./Contexts/SavedPostsContext";
+import { LearningDataProvider } from "./Contexts/LearningData";
 export const EmailContext = createContext();
 
 function App() {
@@ -14,11 +15,13 @@ function App() {
   // }
   return (
     <EmailContext.Provider value={{ email, Setemail }}>
+    <LearningDataProvider>
        <SavedPostsProvider>
       <div className="App">
         <Main />
       </div>
       </SavedPostsProvider>
+      </LearningDataProvider>
     </EmailContext.Provider>
   );
 }

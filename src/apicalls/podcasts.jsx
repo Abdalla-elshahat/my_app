@@ -1,4 +1,6 @@
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { Domain, token } from "../utels/consts";
+import { toast } from "react-toastify";
 
   export const getforyou = async (setforyou) => {
     try {
@@ -89,4 +91,56 @@ import { Domain, token } from "../utels/consts";
           console.log(error);
         }
   };
-    
+  export const saveandunsaved = async (id) => {
+      try {
+        const response = await fetch(`${Domain}/api/SavedPodCat/toggle/${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          toast.error(
+            `Error following user: ${errorData.message || "Unknown error"}`,
+            {
+              icon: <FaExclamationCircle color="red" />,
+            }
+          );
+          return;
+        }
+        const result = await response.json();
+        toast.success(result.message, {
+          icon: <FaCheckCircle color="green" />,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+  };
+  export const getallsaved = async (setsaved) => {
+      try {
+        const response = await fetch(`${Domain}/api/SavedPodCat/saved-podcast`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          toast.error(
+            `Error fetching podcasts: ${errorData.message || "Unknown error"}`,
+            { icon: <FaExclamationCircle color="red" /> }
+          );
+          return;
+        }
+  
+        const result = await response.json();
+        setsaved(result.data || []); // ✅ تأكد من أن القيمة المخزنة مصفوفة دائماً
+        console.log(result.data);
+      } catch (error) {
+        console.error("❌ Error fetching saved podcasts:", error);
+      }
+    };

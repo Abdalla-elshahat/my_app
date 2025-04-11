@@ -120,29 +120,29 @@ export  function GetLearningByUserId(id,setLearningData,setFormData,setErrorMess
         setErrorMessage("Failed to fetch learning data.");
       });
 }
-export function sendLearning(school,degree,startDte,endDte,grade,activities,description,about,setErrorMessage) {
-    const formattedData = {
-      school,
-      degree,
-      startDte,
-      endDte,
-      grade,
-      activities,
-      description,
-      about,
-    };
+// export function sendLearning(school,degree,startDte,endDte,grade,activities,description,about,setErrorMessage) {
+//     const formattedData = {
+//       school,
+//       degree,
+//       startDte,
+//       endDte,
+//       grade,
+//       activities,
+//       description,
+//       about,
+//     };
 
-    axios.put(`${Domain}/api/Learning/Learning`, formattedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        console.log("✅ Success:", res.data);
-      })
-      .catch((err) => {
-        console.error("❌ Error:", err);
-        setErrorMessage(err.response?.data?.message || err.message);
-      });
-}
+//     axios.put(`${Domain}/api/Learning/Learning`, formattedData, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           "Content-Type": "application/json",
+//         },
+//       })
+//       .then((res) => {
+//         console.log("✅ Success:", res.data);
+//       })
+//       .catch((err) => {
+//         console.error("❌ Error:", err);
+//         setErrorMessage(err.response?.data?.message || err.message);
+//       });
+// }

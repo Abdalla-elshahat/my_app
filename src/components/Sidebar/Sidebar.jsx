@@ -21,6 +21,7 @@ const Sidebar = () => {
     { icon: faClipboard, label: 'About', path: '/About' },
     { icon: faEnvelope, label: 'Contact', path: '/Contact' },
     { icon: faUserPlus, label: 'Add', path: '/AddFriends' }, 
+   
   ];
 
   // التنقل بعد ثانية

@@ -1,9 +1,9 @@
-import { React, useEffect, useRef, useState } from "react";
+import { React, useContext, useEffect, useRef, useState } from "react";
 import "./Profile.css";
 import imgSrc from "./imageProfile/BEN-KIERMAN.jpg";
 import { TfiMoreAlt } from "react-icons/tfi";
-import {MapPin,} from "lucide-react";
-import { Domain } from "../../utels/consts";
+import {Heart, MapPin, MessageCircle, Share2,} from "lucide-react";
+import { Domain} from "../../utels/consts";
 import { FiCamera } from "react-icons/fi";
 import Select from "react-select";
 import { programmingSkills } from "../../utels/data.ts";
@@ -11,7 +11,12 @@ import { FaPen } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { getProfile, getSharedPosts, updatePhoto, updateProfile } from "../../apicalls/profile.jsx";
 import PopupModal from "./popupintersts.jsx";
+import { LearningDataContext } from "../../Contexts/LearningData";
+import axios from "axios";
+import Cookies from "js-cookie";
 function Profile() {
+  const token=Cookies.get("token")
+  const [showDetails, setShowDetails] = useState(true);
   const [details, setdetails] = useState({});
   const [NewPhot, setNewPhot] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -25,12 +30,20 @@ function Profile() {
   const [clicked, setclicked] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [learning, setLearning] = useState({});
-  const [selectedSkills, setSelectedSkills] = useState([]);
+
+  const [selectedSkills, setSelectedSkills] = useState([] );
+  
   const [profileData, setProfileData] = useState({
     displayName: details.displayName || "",
     address: details.address || "",
     job: details.job || "",
   });
+  
+  const [skillId, setskillId] = useState(null)
+
+  const { learningggg, GetLearningByUserId, id , getId } = useContext(LearningDataContext);
+
+
   const fileInputRef = useRef(null);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +55,56 @@ function Profile() {
           : value,
     }));
   };
+
+
+
+
+  const formatFacebookDate = (dateString) => {
+    // Handle invalid dates
+    if (!dateString || dateString.startsWith("0001-01-01")) {
+      return "No date available";
+    }
+  
+    const postDate = new Date(dateString);
+    if (isNaN(postDate.getTime())) return "Invalid date"; // Extra safety check
+  
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - postDate) / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+  
+    if (diffInSeconds < 60) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInHours < 24) return postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  
+    if (diffInDays === 1) {
+      return `Yesterday at ${postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+    }
+  
+    // If the post is from the same year, show "Mar 20 at 5:47 PM"
+    if (postDate.getFullYear() === now.getFullYear()) {
+      return postDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+             ` at ${postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+    }
+  
+    // If the post is from a different year, show "Mar 20, 2024 at 5:47 PM"
+    return postDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) +
+           ` at ${postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+  };
+  
+  
+  
+
+  useEffect(() => {
+    console.log(id)
+    getId()
+    GetLearningByUserId(id)
+    
+      }, [id]);
+  
+  
+
   useEffect(() => {
     if (details && Object.keys(details).length > 0) {
       setProfileData({
@@ -50,7 +113,7 @@ function Profile() {
         job: details.job || "",
       });
     }
-    console.log(details)
+    // console.log(details)
   }, [details]);
 
   useEffect(() => {
@@ -60,10 +123,10 @@ function Profile() {
 
   useEffect(() => {
     if (details.pictureUrl) {
-      setNewPhot(`${Domain}${details.pictureUrl}`);
+      setNewPhot(`${Domain}${details?.pictureUrl}`);
       setsharedPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post.user.id === details.id
+          post?.user?.id === details.id
             ? {
                 ...post,
                 user: {
@@ -84,6 +147,7 @@ function Profile() {
   const academicSubjects = [
     "Mathematics",
     "Science",
+    "Health Education",
     "English/Language Arts",
     "Social Studies",
     "Foreign Language",
@@ -112,6 +176,8 @@ function Profile() {
         (item) => item?.trim() !== ""
       );
 
+      // console.log(filteredInterests)
+
 
       return filteredInterests;
     });
@@ -122,20 +188,202 @@ function Profile() {
     handleCheckboxChange();
   }, []);
 
-  // Handle skill selection
-  const handleSkillsChange = (selectedOptions) => {
+
+
+  
+
+
+
+// skillllll
+
+
+// Handle skill selection
+const handleSkillsChange = (selectedOptions) => {
+  setSelectedSkills((prevSkills) => {
     const updatedSkills = selectedOptions.map((option) => ({
       value: option.value,
       label: option.label,
-      image: option.image || "", // Ensure an image key exists
     }));
-    setSelectedSkills(updatedSkills);
+
+    console.log("Selected Skills (Before State Update):", prevSkills);
+    console.log("Updated Skills (New Selection):", updatedSkills);
+
+    return updatedSkills;
+  });
+};
+
+
+const handleSkillUpdate = (e) => {
+  e.preventDefault();
+  setPopupSkills(false);
+};
+
+function getSkillsById() {
+  axios
+    .get(`http://arabdevcommunity.runasp.net/api/Skill/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then((res) => {
+      if (res.data.data.length > 0) {
+        setskillId(res.data.data[0].id);
+      }
+
+      const skillsArray = res.data.data.flatMap((skill) =>
+        skill.skillName
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s)
+          .map((s) => ({
+            value: skill.id,
+            label: s,
+          }))
+      );
+
+      setSelectedSkills(skillsArray); // Ensuring proper update
+    })
+    .catch((err) => {
+      console.error("Error:", err);
+    });
+}
+
+useEffect(() => {
+  if (id) {
+    getSkillsById();
+  }
+}, [id]);
+
+
+
+
+function sendSkills() {
+  let uniqueSkills = [...new Set(selectedSkills.map((skill) => skill.label))];
+
+  // Even if no skills are selected, we should send an empty array
+  const payload = {
+    id: skillId,
+    skillName: uniqueSkills.length > 0 ? uniqueSkills : [], // Send empty array if no skills
   };
 
-  const handleSkillUpdate = (e) => {
-    e.preventDefault();
-    setPopupSkills(false); // Close modal after adding
-  };
+  console.log("Sending Payload:", JSON.stringify(payload, null, 2));
+
+  axios
+    .put("http://arabdevcommunity.runasp.net/api/Skill/update-skill", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then((res) => {
+      console.log("Success:", res);
+      getSkillsById(); // Refresh after update
+    })
+    .catch((err) => {
+      console.error("Error:", err);
+    });
+
+  setPopupSkills(false); // Close modal after saving
+}
+
+
+// skillllll
+
+
+///////////////////////////////////////////
+
+////// shared posts
+
+function getSharedPosts(){
+
+  axios
+  .get(`${Domain}/api/Share/user-posts-with-shares`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Assuming `token` is defined
+    },
+  })
+  .then((res) => {
+    setsharedPosts(res.data.data);
+    // console.log(res.data.data);
+  })
+  .catch((err) => {
+    console.error("Error fetching profile:", err);
+  });
+
+}
+
+
+
+
+
+
+
+// Function to determine grid layout based on the number of images
+const getGridClass = (count) => {
+  switch (count) {
+    case 1:
+      return "grid-cols-1";
+    case 2:
+      return "grid-cols-2";
+    case 3:
+      return "grid-cols-2 grid-rows-2";
+    case 4:
+      return "grid-cols-2 grid-rows-2";
+    default:
+      return "grid-cols-3 grid-rows-2";
+  }
+};
+
+// Function to apply specific styling for each image
+const getImageClass = (count, index) => {
+  if (count === 3 && index === 0) return "col-span-2 row-span-2"; // Large first image for 3 images
+  if (count >= 5 && index === 0) return "col-span-2 row-span-2"; // Large first image for 5+ images
+  return "";
+};
+
+
+
+
+///////////////////////////////////////////
+
+///////////////////////////////////////////
+
+////// Intersts
+
+  function getInterests(){
+    axios.get("http://arabdevcommunity.runasp.net/api/User/GetInterests", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            })
+    .then((res) => {
+      console.log(res.data)
+      setSelectedInterests(res.data)
+    })
+    .catch((err) => {
+      console.log( err)
+    })
+  }
+  
+  useEffect(() => {
+    getInterests();
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="min-h-screen relative bg-gray-50">
@@ -390,234 +638,263 @@ function Profile() {
           )}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mt-8">
-          {/* Skills */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="font-semibold mb-2">Skills</h2>
-            <div className="flex flex-wrap gap-2 relative">
-              {/* Display Selected Skills */}
-              {selectedSkills.length > 0 ? (
-                selectedSkills.map((skill) => (
-                  <span
-                    key={skill.value}
-                    className="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
-                  >
-                    <img
-                      src={skill.image}
-                      alt={skill.label}
-                      className="w-5 h-5"
-                    />
-                    <span>{skill.label}</span>
-                  </span>
-                ))
-              ) : (
-                <p className="text-gray-500">No skills added yet.</p>
-              )}
 
-              {/* Edit Button */}
+
+        
+<div className="grid md:grid-cols-3 gap-6 mt-8">
+
+
+{/* Skills */}
+<div className="bg-white p-4 rounded-lg shadow-sm">
+<h2 className="font-semibold mb-2">Skills</h2>
+
+<div className="flex flex-wrap gap-2 relative">
+{/* Display Selected Skills */}
+{selectedSkills.length > 0 ? (
+selectedSkills.map((skill) => (
+<div key={skill.value} className="flex items-center space-x-2 bg-gray-200 px-3 py-1 rounded-full shadow-sm">
+<span className="text-gray-800 text-sm">{skill.label}</span>
+</div>
+))
+) : (
+<p className="text-gray-500">No skills selected.</p>
+)}
+
+
+
+{/* Edit Button */}
+<button
+onClick={() => setPopupSkills(true)}
+type="button"
+className="ml-2"
+>
+<FaPen className="text-gray-500 hover:text-black absolute right-0 top-[-26px]" />
+</button>
+
+{/* Modal */}
+{popupSkills && (
+<div
+className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 z-50"
+onClick={() => setPopupSkills(false)}
+>
+<div
+className="relative p-4 w-full max-w-sm bg-white rounded-lg shadow-sm"
+onClick={(e) => e.stopPropagation()}
+>
+<div className="flex justify-between items-center border-b p-4">
+  <h3 className="text-lg font-semibold text-black">
+    Update Your Skills
+  </h3>
+  <button
+    onClick={() => setPopupSkills(false)}
+    className="text-black hover:text-gray-500"
+  >
+    ✖
+  </button>
+</div>
+
+<form
+  className="p-4 overflow-auto"
+  onSubmit={handleSkillUpdate}
+>
+  <div className="grid gap-4 mb-4">
+    {/* Selected Skills */}
+    <div>
+      <label className="block mb-2 text-sm font-medium">
+        Selected Skills
+      </label>
+      <div className="flex flex-wrap gap-2 max-h-28 overflow-auto border p-2 rounded-lg">
+        {selectedSkills.length > 0 ? (
+          selectedSkills.map((skill) => (
+            <div
+              key={skill.value}
+              className="flex items-center space-x-2 bg-gray-200 px-3 py-1 rounded-full shadow-sm"
+            >
+              <span className="text-gray-800 text-sm ">
+                {skill.label}
+              </span>
               <button
-                onClick={() => setPopupSkills(true)}
                 type="button"
-                className="ml-2"
+                onClick={() => {
+                  setSelectedSkills((prevSkills) =>
+                    prevSkills.filter((s) => s.label !== skill.label)
+                  );
+                  console.log("Removed Skill:", skill.label);
+                }}
+                className="text-gray-500 hover:text-red-500"
               >
-                <FaPen className="text-gray-500 hover:text-black absolute right-0 top-[-26px]" />
+                ✖
               </button>
-
-              {/* Modal */}
-              {popupSkills && (
-                <div
-                  className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 z-50"
-                  onClick={() => setPopupSkills(false)}
-                >
-                  <div
-                    className="relative p-4 w-full max-w-sm bg-white rounded-lg shadow-sm"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="flex justify-between items-center border-b p-4">
-                      <h3 className="text-lg font-semibold text-black">
-                        Update Your Skills
-                      </h3>
-                      <button
-                        onClick={() => setPopupSkills(false)}
-                        className="text-black hover:text-gray-500"
-                      >
-                        ✖
-                      </button>
-                    </div>
-
-                    <form
-                      className="p-4 overflow-auto"
-                      onSubmit={handleSkillUpdate}
-                    >
-                      <div className="grid gap-4 mb-4">
-                        {/* Selected Skills */}
-                        <div>
-                          <label className="block mb-2 text-sm font-medium">
-                            Selected Skills
-                          </label>
-                          <div className="flex flex-wrap gap-2 max-h-28 overflow-auto border p-2 rounded-lg">
-                            {selectedSkills.length > 0 ? (
-                              selectedSkills.map((skill) => (
-                                <div
-                                  key={skill.value}
-                                  className="flex items-center space-x-2 bg-gray-200 px-3 py-1 rounded-full shadow-sm"
-                                >
-                                  <img
-                                    src={skill.image}
-                                    alt={skill.label}
-                                    className="w-5 h-5"
-                                  />
-                                  <span className="text-gray-800 text-sm">
-                                    {skill.label}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setSelectedSkills(
-                                        selectedSkills.filter(
-                                          (s) => s.value !== skill.value
-                                        )
-                                      )
-                                    }
-                                    className="text-gray-500 hover:text-red-500"
-                                  >
-                                    ✖
-                                  </button>
-                                </div>
-                              ))
-                            ) : (
-                              <p className="text-gray-500">
-                                No skills selected.
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Skills Selection */}
-                        <div>
-                          <label htmlFor="skills">Select Skills</label>
-                          <Select
-                            isMulti
-                            id="skills"
-                            name="skills"
-                            options={programmingSkills}
-                            className="basic-multi-select"
-                            classNamePrefix="select"
-                            onChange={handleSkillsChange}
-                            menuPlacement="auto"
-                            menuPosition="fixed"
-                            hideSelectedOptions={false}
-                            value={selectedSkills} // Keep UI in sync with state
-                          />
-                        </div>
-                      </div>
-
-                      {/* Submit Button */}
-                      <button
-                        type="submit"
-                        className="w-full text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
-                      >
-                        Add Skills
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
+          ))
+        ) : (
+          <p className="text-gray-500">
+            No skills selected.
+          </p>
+        )}
+      </div>
+    </div>
 
-          {/* Learning */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="font-semibold mb-2">Currently Learning</h2>
-            <div className="flex flex-wrap gap-2 relative">
-              {
-                <div className="mt-4">
-                  <p>
-                    <strong>School:</strong> {learning?.school}
-                  </p>
-                  <p>
-                    <strong>Degree:</strong> {learning?.degree}
-                  </p>
-                  <p>
-                    <strong>Start Date:</strong> {learning?.startDte}
-                  </p>
-                  <p>
-                    <strong>End Date:</strong> {learning?.endDte}
-                  </p>
-                  <p>
-                    <strong>Grade:</strong> {learning?.grade}
-                  </p>
-                  <p>
-                    <strong>Activities:</strong> {learning?.activities}
-                  </p>
-                  <p>
-                    <strong>Description:</strong> {learning?.description}
-                  </p>
-                </div>
-              }
+    {/* Skills Selection */}
+    <div>
+      <label htmlFor="skills">Select Skills</label>
 
-              <Link to="/learningForm">
-                <button type="button" className="ml-2">
-                  <FaPen className="text-gray-500 hover:text-black absolute right-0 top-[-26px]" />
-                </button>
-              </Link>
-            </div>
-          </div>
+<Select
+isMulti
+id="skills"
+name="skills"
+options={programmingSkills.map((option) => ({
+...option,
+isDisabled: selectedSkills.some((skill) => skill.value === option.value), // Disable previously selected skills
+}))}
+className="basic-multi-select"
+classNamePrefix="select"
+onChange={(selectedOptions) => {
+// Prevent adding already selected skills
+const newOptions = selectedOptions.filter(
+(option) => !selectedSkills.some((skill) => skill.value === option.value)
+);
 
-          {/* Interests */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="font-semibold mb-2">My Interests</h2>
-            <div className="flex flex-wrap gap-2 relative">
-              <button
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => setPopupInterst(true)}
-                type="button"
-                className="ml-2"
-              >
-                <FaPen className="text-gray-500 hover:text-black absolute right-0 top-[-26px]" />
-              </button>
+setSelectedSkills([...selectedSkills, ...newOptions]); // Append only new options
+}}
+menuPlacement="auto"
+menuPosition="fixed"
+hideSelectedOptions={false}
+components={{ MultiValue: () => null }} // Prevent duplicate display in the dropdown
+value={selectedSkills}
+/>
 
-              {/* Display selected interests */}
-              {Array.isArray(selectedInterests) &&
-              selectedInterests.length > 0 ? (
-                selectedInterests
-                  .filter(
-                    (interest) =>
-                      typeof interest === "string" && interest.trim() !== ""
-                  )
-                  .map((interest, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-100 px-3 py-1 rounded-full text-sm"
-                    >
-                      {interest}
-                    </span>
-                  ))
-              ) : (
-                <p className="text-gray-400 text-sm">No interests selected</p> // ✅ Show message when empty
-              )}
-            </div>
 
-            {/* Popup Modal */}
-            <PopupModal
-        isOpen={popupInterst}
-        onClose={() => setPopupInterst(false)}
-        academicSubjects={academicSubjects}
-        extracurricularActivities={extracurricularActivities}
-        selectedInterests={selectedInterests}
-        handleCheckboxChange={handleCheckboxChange}
-        customAcademicInterest={customAcademicInterest}
-        setCustomAcademicInterest={setCustomAcademicInterest}
-        customExtracurricularInterest={customExtracurricularInterest}
-        setCustomExtracurricularInterest={setCustomExtracurricularInterest}
-      />
-          </div>
-        </div>
-        {/* Posts */}
+    
+    </div>
+  </div>
+
+  {/* Submit Button */}
+  <button
+    onClick={sendSkills}
+    type="submit"
+    className="w-full text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
+  >
+    Save Changes
+  </button>
+</form>
+</div>
+</div>
+)}
+</div>
+</div>
+
+
+{/* Learning */}
+<div className="bg-white p-4 rounded-lg shadow-sm">
+<h2 className="font-semibold mb-2">Currently Learning</h2>
+<div className="flex flex-wrap gap-2 relative">
+{learningggg ? (
+<div className="mt-4">
+  <p><strong>School:</strong> {learningggg.school}</p>
+  <p><strong>Degree:</strong> {learningggg.degree}</p>
+  <p><strong>Start Date:</strong> {learningggg.startDte}</p>
+  <p><strong>End Date:</strong> {learningggg.endDte}</p>
+  <p><strong>Grade:</strong> {learningggg.grade}</p>
+  <p><strong>Activities:</strong> {learningggg.activities}</p>
+  <p><strong>Description:</strong> {learningggg.description}</p>
+  <p><strong>About:</strong> {learningggg.about}</p>
+
+</div>
+) : (
+<p className="text-gray-500">No learning data available.</p>
+)}
+
+<Link to="/learningForm">
+<button type="button" className="ml-2">
+  <FaPen className="text-gray-500 hover:text-black absolute right-0 top-[-26px]" />
+</button>
+</Link>
+</div>
+</div>
+
+
+
+{/* Interests */}
+<div className="bg-white p-4 rounded-lg shadow-sm">
+
+  <h2 className="font-semibold mb-2">My Interests</h2>
+
+  <div className="flex flex-wrap gap-2 relative">
+
+    <button
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={() => setPopupInterst(true)}
+      type="button"
+      className="ml-2"
+    >
+
+      <FaPen className="text-gray-500 hover:text-black absolute right-0 top-[-26px]" />
+
+    </button>
+
+    {/* Display selected interests */}
+    {Array.isArray(selectedInterests) &&
+    selectedInterests.length > 0 ? (
+      selectedInterests
+        .filter(
+          (interest) =>
+            typeof interest === "string" && interest.trim() !== ""
+        )
+        .map((interest, index) => (
+          <span
+            key={index}
+            className="bg-gray-100 px-3 py-1 rounded-full text-sm"
+          >
+            {interest}
+          </span>
+        ))
+    ) : (
+      <p className="text-gray-400 text-sm">No interests selected</p> // ✅ Show message when empty
+    )}
+  </div>
+
+  {/* Popup Modal */}
+  <PopupModal
+  isOpen={popupInterst}
+  onClose={() => setPopupInterst(false)}
+  academicSubjects={academicSubjects}
+  extracurricularActivities={extracurricularActivities}
+  selectedInterests={selectedInterests}
+  setSelectedInterests={setSelectedInterests} // <-- Pass this for updates
+  customAcademicInterest={customAcademicInterest}
+  setCustomAcademicInterest={setCustomAcademicInterest}
+  customExtracurricularInterest={customExtracurricularInterest}
+  setCustomExtracurricularInterest={setCustomExtracurricularInterest}
+/>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
         {/**/}
+      
+      
+      
+      
       </div>
     </div>
   );
 }
 
 export default Profile;
+
+
+
+
