@@ -5,6 +5,7 @@ import {
   faBookmark,
   faClipboard,
   faEnvelope,
+  faFileCode,
   faHouse,
   faMicrophone,
   faUserPlus,
@@ -20,7 +21,8 @@ const Sidebar = () => {
     { icon: faBookmark, label: 'Saved', path: '/Saved' },
     { icon: faClipboard, label: 'About', path: '/About' },
     { icon: faEnvelope, label: 'Contact', path: '/Contact' },
-    { icon: faUserPlus, label: 'Add', path: '/AddFriends' }, 
+    { icon: faUserPlus, label: 'Add Friends', path: '/AddFriends' }, 
+    { icon: faFileCode, label: 'RoadMaps', path: '/Roadmaps' }, 
    
   ];
 

@@ -5,8 +5,6 @@ import { token } from "../../utels/consts";
 function PopupModal({
   isOpen,
   onClose,
-  academicSubjects,
-  extracurricularActivities,
   selectedInterests,
   setSelectedInterests, // Now passed for updating only on save
   customAcademicInterest,
@@ -14,6 +12,23 @@ function PopupModal({
   customExtracurricularInterest,
   setCustomExtracurricularInterest,
 }) {
+  const academicSubjects = [
+    "Mathematics",
+    "Science",
+    "Health Education",
+    "English/Language Arts",
+    "Social Studies",
+    "Foreign Language",
+  ];
+
+  const extracurricularActivities = [
+    "Sports",
+    "Music/Band",
+    "Drama/Theater",
+    "Debate/Forensics",
+    "Art",
+    "Clubs/Organizations",
+  ];
   const [tempSelectedInterests, setTempSelectedInterests] = useState([...selectedInterests]);
 
   useEffect(() => {

@@ -15,6 +15,7 @@ import Profileusers from "./components/profileusers/Profileusers";
 import AddFriends from "./components/addFriends/addfriends";
 import Profile from "./components/Profile/Profle";
 import LearningForm from "./components/Profile/LearningForm";
+import Roadmaps from "./components/Roadmaps/Roadmaps";
 
 function Main(){
     return(
@@ -38,7 +39,7 @@ function Main(){
                 <Route path="/profileusers/:id" element={<Profileusers/>} />
                 <Route path="/AddFriends" element={<AddFriends/>} />
                 <Route path="/learningForm" element={<LearningForm/>} />
-                
+                <Route path="/Roadmaps" element={<Roadmaps/>} />
             </Routes>
         </div>
         </>

@@ -120,29 +120,49 @@ export  function GetLearningByUserId(id,setLearningData,setFormData,setErrorMess
         setErrorMessage("Failed to fetch learning data.");
       });
 }
-// export function sendLearning(school,degree,startDte,endDte,grade,activities,description,about,setErrorMessage) {
-//     const formattedData = {
-//       school,
-//       degree,
-//       startDte,
-//       endDte,
-//       grade,
-//       activities,
-//       description,
-//       about,
-//     };
-
-//     axios.put(`${Domain}/api/Learning/Learning`, formattedData, {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//           "Content-Type": "application/json",
-//         },
-//       })
-//       .then((res) => {
-//         console.log("✅ Success:", res.data);
-//       })
-//       .catch((err) => {
-//         console.error("❌ Error:", err);
-//         setErrorMessage(err.response?.data?.message || err.message);
-//       });
-// }
+export function getInterests(setSelectedInterests){
+    axios.get("http://arabdevcommunity.runasp.net/api/User/GetInterests", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            })
+    .then((res) => {
+      console.log(res.data)
+      setSelectedInterests(res.data)
+    })
+    .catch((err) => {
+      console.log( err)
+    })
+  }
+export function getSkillsById(id,setskillId,setSelectedSkills) {
+    axios
+      .get(`http://arabdevcommunity.runasp.net/api/Skill/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        if (res.data.data.length > 0) {
+          setskillId(res.data.data[0].id);
+        }
+  
+        const skillsArray = res.data.data.flatMap((skill) =>
+          skill.skillName
+            .split(",")
+            .map((s) => s.trim())
+            .filter((s) => s)
+            .map((s) => ({
+              value: skill.id,
+              label: s,
+            }))
+        );
+  
+        setSelectedSkills(skillsArray); // Ensuring proper update
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+      });
+  }
+  

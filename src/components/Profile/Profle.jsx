@@ -3,20 +3,21 @@ import "./Profile.css";
 import imgSrc from "./imageProfile/BEN-KIERMAN.jpg";
 import { TfiMoreAlt } from "react-icons/tfi";
 import {Heart, MapPin, MessageCircle, Share2,} from "lucide-react";
-import { Domain} from "../../utels/consts";
+import { Domain, token } from "../../utels/consts";
 import { FiCamera } from "react-icons/fi";
 import Select from "react-select";
 import { programmingSkills } from "../../utels/data.ts";
 import { FaPen } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { getProfile, getSharedPosts, updatePhoto, updateProfile } from "../../apicalls/profile.jsx";
+import { getInterests, getProfile, getSharedPosts, getSkillsById, updatePhoto, updateProfile } from "../../apicalls/profile.jsx";
 import PopupModal from "./popupintersts.jsx";
 import { LearningDataContext } from "../../Contexts/LearningData";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getGridClass, getImageClass } from "../../apicalls/logics.jsx";
+
 function Profile() {
-  const token=Cookies.get("token")
   const [showDetails, setShowDetails] = useState(true);
+
   const [details, setdetails] = useState({});
   const [NewPhot, setNewPhot] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -100,7 +101,6 @@ function Profile() {
     console.log(id)
     getId()
     GetLearningByUserId(id)
-    
       }, [id]);
   
   
@@ -144,23 +144,7 @@ function Profile() {
     setNewPhot(NewPhot);
   },[NewPhot]);
 
-  const academicSubjects = [
-    "Mathematics",
-    "Science",
-    "Health Education",
-    "English/Language Arts",
-    "Social Studies",
-    "Foreign Language",
-  ];
 
-  const extracurricularActivities = [
-    "Sports",
-    "Music/Band",
-    "Drama/Theater",
-    "Debate/Forensics",
-    "Art",
-    "Clubs/Organizations",
-  ];
 
 
 
@@ -218,40 +202,11 @@ const handleSkillUpdate = (e) => {
   setPopupSkills(false);
 };
 
-function getSkillsById() {
-  axios
-    .get(`http://arabdevcommunity.runasp.net/api/Skill/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-    .then((res) => {
-      if (res.data.data.length > 0) {
-        setskillId(res.data.data[0].id);
-      }
 
-      const skillsArray = res.data.data.flatMap((skill) =>
-        skill.skillName
-          .split(",")
-          .map((s) => s.trim())
-          .filter((s) => s)
-          .map((s) => ({
-            value: skill.id,
-            label: s,
-          }))
-      );
-
-      setSelectedSkills(skillsArray); // Ensuring proper update
-    })
-    .catch((err) => {
-      console.error("Error:", err);
-    });
-}
 
 useEffect(() => {
   if (id) {
-    getSkillsById();
+    getSkillsById(id,setskillId,setSelectedSkills);
   }
 }, [id]);
 
@@ -288,103 +243,9 @@ function sendSkills() {
 }
 
 
-// skillllll
-
-
-///////////////////////////////////////////
-
-////// shared posts
-
-function getSharedPosts(){
-
-  axios
-  .get(`${Domain}/api/Share/user-posts-with-shares`, {
-    headers: {
-      Authorization: `Bearer ${token}`, // Assuming `token` is defined
-    },
-  })
-  .then((res) => {
-    setsharedPosts(res.data.data);
-    // console.log(res.data.data);
-  })
-  .catch((err) => {
-    console.error("Error fetching profile:", err);
-  });
-
-}
-
-
-
-
-
-
-
-// Function to determine grid layout based on the number of images
-const getGridClass = (count) => {
-  switch (count) {
-    case 1:
-      return "grid-cols-1";
-    case 2:
-      return "grid-cols-2";
-    case 3:
-      return "grid-cols-2 grid-rows-2";
-    case 4:
-      return "grid-cols-2 grid-rows-2";
-    default:
-      return "grid-cols-3 grid-rows-2";
-  }
-};
-
-// Function to apply specific styling for each image
-const getImageClass = (count, index) => {
-  if (count === 3 && index === 0) return "col-span-2 row-span-2"; // Large first image for 3 images
-  if (count >= 5 && index === 0) return "col-span-2 row-span-2"; // Large first image for 5+ images
-  return "";
-};
-
-
-
-
-///////////////////////////////////////////
-
-///////////////////////////////////////////
-
-////// Intersts
-
-  function getInterests(){
-    axios.get("http://arabdevcommunity.runasp.net/api/User/GetInterests", {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            })
-    .then((res) => {
-      console.log(res.data)
-      setSelectedInterests(res.data)
-    })
-    .catch((err) => {
-      console.log( err)
-    })
-  }
-  
   useEffect(() => {
-    getInterests();
+    getInterests(setSelectedInterests);
   }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <div className="min-h-screen relative bg-gray-50">
       {/* Profile Header */}
@@ -858,8 +719,6 @@ value={selectedSkills}
   <PopupModal
   isOpen={popupInterst}
   onClose={() => setPopupInterst(false)}
-  academicSubjects={academicSubjects}
-  extracurricularActivities={extracurricularActivities}
   selectedInterests={selectedInterests}
   setSelectedInterests={setSelectedInterests} // <-- Pass this for updates
   customAcademicInterest={customAcademicInterest}
@@ -872,29 +731,197 @@ value={selectedSkills}
 
 </div>
 
+        {/* Posts */}
+        
+                <div className="mt-8 space-y-6">
+        
+                  {
+
+
+                    sharedPosts?.map( (sharedPost) => {
+                      
+        
+                      return(
+
+                        <>
+
+                        {
+                          sharedPost.type === "Post" ?
+                        
+                        <div  className="bg-white p-4 rounded-lg shadow-sm border">
+                        <div className="flex items-center gap-3 mb-3 ">
+
+                          <div className="bg-red-500 rounded-full">
+
+                          <img 
+          src={sharedPost.shareId === details?.id ? NewPhot : `${Domain}${sharedPost.user.pictureUrl}`}  
+          alt={sharedPost.shareId} 
+          className="w-10 h-10 rounded-full object-cover"
+        />
+                          </div>
+        
+                          <div>
+                            <div className="font-medium">{sharedPost.user.displayName}</div>
+        
+                            <div className="text-gray-500 text-sm">
+                             {new Date(sharedPost.postDate).toLocaleDateString("en-US", {
+                             weekday: "long", // Full day name (e.g., Monday)
+                             day: "numeric", // Day number (e.g., 13)
+                            })}
+                           </div>
+        
+                          </div>
+        
+                        </div>
+                        {showDetails && (
+                          <h3 className="font-medium mb-3 ">{sharedPost.title}</h3>
+                        )}
+        
+        {sharedPost.images && sharedPost.images.length > 0 && (
+  <div className={`grid gap-1 ${getGridClass(sharedPost.images.length)}`}>
+    {sharedPost.images.map((photo, index) => (
+      <img
+        key={index}
+        src={`${Domain}${photo}`}
+        alt="Post"
+        className={`w-full h-full object-cover rounded-lg ${getImageClass(sharedPost.images.length, index)}`}
+      />
+    ))}
+  </div>
+)}
+
+
+        
+                        
+        
+                        <button
+                          className="text-blue-600"
+                          onClick={() => setShowDetails((h) => !h)}
+                        >
+                          {showDetails ? "Hide" : "Show"} details
+                        </button>
+
+                        <div className="flex items-center gap-6 text-gray-500 text-sm">
+                          <span className="flex items-center gap-1">
+                            <Heart size={16} /> {sharedPost.likesCount} reactions
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MessageCircle size={16} /> {sharedPost.commentCount} comments
+                          </span>
+                          <button className="flex items-center gap-1 hover:text-gray-700">
+                            <span>{sharedPost.sharesCount}</span> <Share2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+
+                      : sharedPost.type === "Share" ?
+
+                      <div  className=" p-4 rounded-lg shadow-sm border">
+
+<div className = "mb-3 border-b border-b-[#cfd0d1] py-2" >
+
+<div className="flex items-center gap-3 mb-3  ">
+
+<div className="bg-red-500 rounded-full">
+<img 
+src={`${Domain}${sharedPost?.user?.pictureUrl}`}  
+alt={sharedPost.postId} 
+className="w-10 h-10 rounded-full object-cover"
+/>
+</div>
+
+<div>
+  <div className="font-medium">{sharedPost?.user?.displayName}</div>
+
+  {/* <div className="text-gray-500 text-sm">
+   {new Date(sharedPost.postDate).toLocaleDateString("en-US", {
+   weekday: "short", // Full day name (e.g., Monday)
+   year: "numeric", // Day number (e.g., 13)
+  })}
+ </div> */}
+
+<div className="text-gray-500 text-sm">
+  {formatFacebookDate(sharedPost.postDate)}
+</div>
 
 
 
 
+</div>
+
+</div>
+<h3 className="font-medium mb-3 ">{sharedPost.title}</h3>
+
+</div>
 
 
+                      <div className="flex items-center gap-3 mb-3 ">
 
-
-
-
-
-        {/**/}
+                        <div className="bg-red-500 rounded-full">
+                        <img 
+        src={ `${Domain}${sharedPost.sharedFrom.user.pictureUrl}`}  
+        alt={sharedPost.sharedFrom.id} 
+        className="w-10 h-10 rounded-full object-cover"
+      />
+                        </div>
       
+                        <div>
+                          <div className="font-medium">{sharedPost.sharedFrom.user.displayName}</div>
+                        </div>
       
+                      </div>
       
+                      {showDetails && (
+                        <h3 className="font-medium mb-3 ">{sharedPost.sharedFrom.title}</h3>
+                      )}
       
+                      {sharedPost.images?.map((photo, index) => (
+                        <img 
+                          key={index} 
+                          src={`${Domain}${photo}`} 
+                          alt="Saved post" 
+                          className="w-full max-w-[500px] h-auto object-cover rounded-lg shadow-md"
+                        />
+                      ))}
+      
+                      
+      
+                      <button
+                        className="text-blue-600"
+                        onClick={() => setShowDetails((h) => !h)}
+                      >
+                        {showDetails ? "Hide" : "Show"} details
+                      </button>
+
+                      <div className="flex items-center gap-6 text-gray-500 text-sm">
+                        <span className="flex items-center gap-1">
+                          <Heart size={16} /> {sharedPost.likesCount} reactions
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle size={16} /> {sharedPost.commentCount} comments
+                        </span>
+                        <button className="flex items-center gap-1 hover:text-gray-700">
+                          <span>{sharedPost.sharesCount}</span> <Share2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    : ""
+
+                    }
+
+      
+
+                    </>
+                      )
+        
+                    } )
+                  }
+         
+                </div>
+
       </div>
     </div>
   );
 }
-
 export default Profile;
-
-
-
-

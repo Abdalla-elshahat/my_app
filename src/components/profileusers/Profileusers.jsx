@@ -1,23 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  Heart,
-  MapPin,
-  MessageCircle,
-  Share2,
-} from "lucide-react";
-import {
-  followUserFromProfile,
-  getfolloweing,
-  getfollowers,
-  getpostsandsharebyuser,
-  getprofileuser,
-  getprofile,
-} from "../../apicalls/follows";
+import {MapPin} from "lucide-react";
+import {followUserFromProfile,getfolloweing,getfollowers,getpostsandsharebyuser,getprofileuser,getprofile,} from "../../apicalls/follows";
 import { useParams } from "react-router-dom";
 import { Domain } from "../../utels/consts";
 import Popup from "./Popup";
 import Displayimg from "./displayimg";
-
+import Postsusers from "../Posts/postsusers";
 function Profileusers() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -27,40 +15,6 @@ function Profileusers() {
   const [posts, setposts] = useState([]);
   const [Profilelogin, setprofilelogin] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [details, setdetails] = useState({});
-  const [NewPhot, setNewPhot] = useState("");
-  const [showDetails, setShowDetails] = useState(true);
-
-  const getGridClass = (count) => {
-    switch (count) {
-      case 1:
-        return "grid-cols-1";
-      case 2:
-        return "grid-cols-2";
-      case 3:
-      case 4:
-        return "grid-cols-2 grid-rows-2";
-      default:
-        return "grid-cols-3 grid-rows-2";
-    }
-  };
-
-  const getImageClass = (count, index) => {
-    if ((count === 3 && index === 0) || (count >= 5 && index === 0))
-      return "col-span-2 row-span-2";
-    return "";
-  };
-
-  const formatFacebookDate = (dateString) => {
-    if (!dateString || dateString.startsWith("0001-01-01")) {
-      return "No date available";
-    }
-    return new Date(dateString).toLocaleDateString("en-US", {
-      weekday: "long",
-      day: "numeric",
-    });
-  };
-
   useEffect(() => {
     if (id) {
       getprofileuser(id, setUser);
@@ -100,7 +54,7 @@ function Profileusers() {
               {user.displayName || "Unknown"}
             </h1>
             <p className="text-gray-600 flex items-center gap-1 mt-1 justify-center">
-              <MapPin size={16} /> {user.address || "No address provided"}
+              <MapPin size={16} />Egypt,{user.address || "No address provided"}
             </p>
             <p className="text-gray-600">{user.job || "No job specified"}</p>
           </div>
@@ -241,88 +195,8 @@ function Profileusers() {
         />
       )}
       {isOpen && <Displayimg setIsOpen={setIsOpen} user={user} />}
-
-      {/* Posts */}
-      <div className="mt-8 space-y-6">
-        {posts.map((sharedPost) => (
-          <div
-            key={sharedPost.id}
-            className="bg-white p-4 rounded-lg shadow-sm border"
-          >
-            {sharedPost.type === "Post" ? (
-              <>
-                <div className="flex items-center gap-3 mb-3">
-                  <img
-                    src={`${Domain}${sharedPost.user.pictureUrl}`}
-                    alt="User"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <div className="font-medium">
-                      {sharedPost.user.displayName}
-                    </div>
-                    <div className="text-gray-500 text-sm">
-                      {formatFacebookDate(sharedPost.postDate)}
-                    </div>
-                  </div>
-                </div>
-                {showDetails && (
-                  <h3 className="font-medium mb-3">{sharedPost.title}</h3>
-                )}
-                {sharedPost.images && (
-                  <div className={`grid gap-1 ${getGridClass(sharedPost.images.length)}`}>
-                    {sharedPost.images.map((photo, i) => (
-                      <img
-                        key={i}
-                        src={`${Domain}${photo}`}
-                        alt="Post"
-                        className={`w-full h-full object-cover rounded-lg ${getImageClass(sharedPost.images.length, i)}`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <h3 className="mb-2 font-semibold">Shared a post</h3>
-                <div className="flex items-center gap-3 mb-3">
-                  <img
-                    src={`${Domain}${sharedPost.sharedFrom.user.pictureUrl}`}
-                    alt="Shared user"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <div className="font-medium">
-                      {sharedPost.sharedFrom.user.displayName}
-                    </div>
-                  </div>
-                </div>
-                {sharedPost.sharedFrom.title && (
-                  <h3 className="font-medium mb-3">{sharedPost.sharedFrom.title}</h3>
-                )}
-              </>
-            )}
-            <button
-              className="text-blue-600"
-              onClick={() => setShowDetails((prev) => !prev)}
-            >
-              {showDetails ? "Hide" : "Show"} details
-            </button>
-
-            <div className="flex items-center gap-6 text-gray-500 text-sm mt-3">
-              <span className="flex items-center gap-1">
-                <Heart size={16} /> {sharedPost.likesCount} reactions
-              </span>
-              <span className="flex items-center gap-1">
-                <MessageCircle size={16} /> {sharedPost.commentCount} comments
-              </span>
-              <button className="flex items-center gap-1 hover:text-gray-700">
-                <span>{sharedPost.sharesCount}</span> <Share2 size={16} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/*Posts*/}
+     <Postsusers posts={posts}/>
     </div>
   );
 }
