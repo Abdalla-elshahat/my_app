@@ -2,7 +2,7 @@ import {FaBookmark,FaBackward,FaForward} from "react-icons/fa";
 import { FaPlay } from "react-icons/fa6";
 import { CgPlayPause } from "react-icons/cg";
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { parsePath, useParams } from "react-router-dom";
 import { MdOutlineForward10, MdOutlineReplay10 } from "react-icons/md";
 import { RunPodcast, saveandunsaved } from "../../apicalls/podcasts";
 import { ToastContainer } from "react-toastify";
@@ -14,7 +14,6 @@ export default function PodcastsView() {
   const [Saved, setSaved] = useState([]);
   const { id } = useParams();
   const audioRef = useRef(new Audio());
-
   useEffect(() => {
     RunPodcast(id, setData, audioRef, setDuration);
     // تحديث الوقت أثناء التشغيل
@@ -55,6 +54,8 @@ export default function PodcastsView() {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+
+
 
   if (!data) {
     return (

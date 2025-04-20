@@ -1,4 +1,4 @@
-import {  Route, Routes, useNavigate } from "react-router-dom";
+import {  Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import Podcasts from "./maincomponents/Podcasts/Podcasts";
 import About from "./maincomponents/About/About";
@@ -16,7 +16,8 @@ import AddFriends from "./components/addFriends/addfriends";
 import Profile from "./components/Profile/Profle";
 import LearningForm from "./components/Profile/LearningForm";
 import Roadmaps from "./components/Roadmaps/Roadmaps";
-
+import SubTrack from "./components/Roadmaps/subtracks";
+import TopicsList from "./components/Roadmaps/resourses/TopicsList";
 function Main(){
     return(
         <>
@@ -40,6 +41,9 @@ function Main(){
                 <Route path="/AddFriends" element={<AddFriends/>} />
                 <Route path="/learningForm" element={<LearningForm/>} />
                 <Route path="/Roadmaps" element={<Roadmaps/>} />
+                <Route path="/roadmap/:id" element={<SubTrack/>} />
+                <Route path="/roadmap/subtrack/:id" element={<TopicsList/>} />
+                
             </Routes>
         </div>
         </>
