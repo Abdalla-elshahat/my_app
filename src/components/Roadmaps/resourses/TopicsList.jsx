@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import TopicCard from "./TopicCard";
-import { Domain } from "../../../utels/consts";
 import { useParams } from "react-router-dom";
-
+import { getTopics } from "../../../apicalls/Roadmaps";
 function TopicsList() {
   const [data, setData] = useState([]);
   const {id} = useParams();
-  const getTopics=async function (id) {
-    const response = await fetch(`${Domain}/api/Roadmap/TopicsWithResources/BySubTrack/${id}`);
-    const topics = await response.json();
-    setData(topics.data);
-  }
   useEffect(() => {
-    getTopics(id);
+    getTopics(id,setData);
   }
   , [id]);
   return (
