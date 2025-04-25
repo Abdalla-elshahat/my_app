@@ -24,7 +24,7 @@ export const getallsubTracks=async (id,setData)=>{
     console.log(data.data);
     setData(data.data);
 }
-export   const getTopics=async function (id,setData) {
+export const getTopics=async function (id,setData) {
     const response = await fetch(`${Domain}/api/Roadmap/TopicsWithResources/BySubTrack/${id}`);
     const topics = await response.json();
     console.log(topics.data);
