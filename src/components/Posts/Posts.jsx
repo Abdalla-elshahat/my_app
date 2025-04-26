@@ -107,7 +107,7 @@ useEffect(() => {
     <div className='all-posts'>
       <AddPosts />
       <div className="posts">
-      <Postsusers posts={Posts}/>
+      {/* <Postsusers posts={Posts}/> */}
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ function Postsusers({posts}){
         <>
               {/* Posts */}
               <div className="mt-8 space-y-6">
-                {posts.map((sharedPost) => (
+                {posts?.map((sharedPost) => (
                   <div
                     key={sharedPost.id}
                     className="bg-white p-4 rounded-lg shadow-sm border"

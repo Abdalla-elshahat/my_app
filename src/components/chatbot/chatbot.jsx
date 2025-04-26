@@ -23,6 +23,16 @@ const ChatBot = () => {
 
     setIsLoading(true);
     try {
+      // const fullPrompt = `
+      //   You are a programming and career advisor. Provide detailed, accurate, and practical advice on:
+      //   - Programming (coding techniques, debugging, language-specific advice, best practices).
+      //   - Roadmaps (learning paths for specific tech roles like web developer, data scientist, etc.).
+      //   - CV and resume optimization (structuring, highlighting skills, tailoring for tech roles).
+      //   - Optimization techniques (code performance, algorithms, system efficiency).
+      //   Do NOT respond to queries about products, hardware, or unrelated topics.
+      //   If the query is outside your scope, politely redirect the user to ask about programming, roadmaps, CVs, or optimization.
+      // `;
+
       const result = await model.generateContent(userInput);
       const response = await result.response;
 
@@ -57,8 +67,15 @@ const ChatBot = () => {
             key={index}
             className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
+            {msg.type === 'bot' && (
+              <img
+                src="https://localo.com/assets/img/definitions/what-is-bot.webp"
+                alt="Bot Avatar"
+                className="w-8 h-8 rounded-full"
+              />
+            )}
             <div className={`max-w-xs px-4 py-2 rounded-2xl text-sm ${msg.type === 'user' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border'}`}>
-              <ReactMarkdown>{msg.message}</ReactMarkdown> 
+              <ReactMarkdown>{msg.message}</ReactMarkdown>
             </div>
           </div>
         ))}
