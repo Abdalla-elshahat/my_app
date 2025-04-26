@@ -22,6 +22,7 @@ const ChatBot = () => {
     if (userInput.trim() === '') return;
 
     setIsLoading(true);
+    // dd
     try {
       // const fullPrompt = `
       //   You are a programming and career advisor. Provide detailed, accurate, and practical advice on:
