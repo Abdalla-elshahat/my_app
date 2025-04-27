@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import ChatHistory from './ChatHistory';
-import Loading from './loading';
 import ReactMarkdown from 'react-markdown';
 
 const ChatBot = () => {
   const [userInput, setUserInput] = useState('');
   const [chatHistory, setChatHistory] = useState([
-    { type: 'bot', message: 'أهلاً! كيف أقدر أساعدك اليوم؟' }
+    { type: 'bot', message: 'أهلاً! كيف أقدر أساعدك اليوم؟ (برمجة،CV)' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-
   const genAI = new GoogleGenerativeAI('AIzaSyBSdK24ks4F6qvDg-mgh5RuHvngBTpN5Fo');
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
@@ -22,19 +19,32 @@ const ChatBot = () => {
     if (userInput.trim() === '') return;
 
     setIsLoading(true);
-    // dd
     try {
-      // const fullPrompt = `
-      //   You are a programming and career advisor. Provide detailed, accurate, and practical advice on:
-      //   - Programming (coding techniques, debugging, language-specific advice, best practices).
-      //   - Roadmaps (learning paths for specific tech roles like web developer, data scientist, etc.).
-      //   - CV and resume optimization (structuring, highlighting skills, tailoring for tech roles).
-      //   - Optimization techniques (code performance, algorithms, system efficiency).
-      //   Do NOT respond to queries about products, hardware, or unrelated topics.
-      //   If the query is outside your scope, politely redirect the user to ask about programming, roadmaps, CVs, or optimization.
-      // `;
+      // Construct the prompt with context from chat history
+      const historyContext = chatHistory
+        .map((msg) => `${msg.type === 'user' ? 'User' : 'Bot'}: ${msg.message}`)
+        .join('\n');
 
-      const result = await model.generateContent(userInput);
+      const fullPrompt = `
+        You are a programming and career advisor. Provide detailed, accurate, and practical advice ONLY on:
+        - Programming (coding techniques, debugging, language-specific advice, best practices).
+        - Roadmaps (learning paths for specific tech roles like web developer, data scientist, etc.).
+        - CV and resume optimization (structuring, highlighting skills, tailoring for tech roles).
+        - Optimization techniques (code performance, algorithms, system efficiency).
+        
+        Rules:
+        1. Do NOT respond to queries about products, hardware, or unrelated topics. If the query is outside your scope, politely redirect the user to ask about programming, roadmaps, CVs, or optimization.
+        2. Use the conversation history to maintain context. For example, if the user previously asked about C++ and now asks for a code example, provide a C++ code example.
+        3. Respond in Arabic unless the user explicitly asks for another language.
+        4. If the user asks for a code example, provide a clear, working code snippet with explanations.
+        
+        Conversation History:
+        ${historyContext}
+        
+        User Query: ${userInput}
+      `;
+
+      const result = await model.generateContent(fullPrompt);
       const response = await result.response;
 
       setChatHistory([
@@ -75,7 +85,7 @@ const ChatBot = () => {
                 className="w-8 h-8 rounded-full"
               />
             )}
-            <div className={`max-w-xs px-4 py-2 rounded-2xl text-sm ${msg.type === 'user' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border'}`}>
+            <div className={`max-w-xs px-4 py-2 rounded-2xl text-sm ${msg.type === 'user' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border'} overflow-hidden`}>
               <ReactMarkdown>{msg.message}</ReactMarkdown>
             </div>
           </div>
@@ -94,7 +104,7 @@ const ChatBot = () => {
           onChange={handleUserInput}
           onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
           className="flex-1 px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="اكتب رسالتك..."
+          placeholder="اكتب رسالتك هنا..."
         />
         <button
           onClick={sendMessage}
