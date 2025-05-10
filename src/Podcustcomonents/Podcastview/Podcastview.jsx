@@ -2,9 +2,9 @@ import {FaBookmark,FaBackward,FaForward} from "react-icons/fa";
 import { FaPlay } from "react-icons/fa6";
 import { CgPlayPause } from "react-icons/cg";
 import { useEffect, useRef, useState } from "react";
-import { parsePath, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { MdOutlineForward10, MdOutlineReplay10 } from "react-icons/md";
-import { RunPodcast, saveandunsaved } from "../../apicalls/podcasts";
+import { RunPodcast, saveandunsaved, togglePlay } from "../../apicalls/podcasts";
 import { ToastContainer } from "react-toastify";
 export default function PodcastsView() {
   const [isPlay, setIsPlay] = useState(false);
@@ -19,21 +19,12 @@ export default function PodcastsView() {
     // تحديث الوقت أثناء التشغيل
     const updateTime = () => setCurrentTime(audioRef.current.currentTime);
     audioRef.current.addEventListener("timeupdate", updateTime);
-
     return () => {
       audioRef.current.removeEventListener("timeupdate", updateTime);
     };
   }, [id]);
 
-  const togglePlay = () => {
-    if (!data?.audioUrl) return;
-    if (isPlay) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-    setIsPlay(!isPlay);
-  };
+
 
   const handleSeek = (e) => {
     const newTime = e.target.value;
@@ -116,7 +107,8 @@ export default function PodcastsView() {
           />
           <div
             className="bg-blue-600 text-white p-4 rounded-full cursor-pointer"
-            onClick={togglePlay}
+            onClick={() => togglePlay(setIsPlay, audioRef, isPlay, data)}
+
           >
             {isPlay ? (
               <CgPlayPause className="text-2xl" />

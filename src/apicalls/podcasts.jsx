@@ -143,4 +143,18 @@ import { toast } from "react-toastify";
       } catch (error) {
         console.error("❌ Error fetching saved podcasts:", error);
       }
-    };
+  };
+
+  export const togglePlay = async (setIsPlay, audioRef, isPlay, data) => {
+    if (!data?.audioUrl) return;
+  
+    if (isPlay) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+  
+    setIsPlay(!isPlay);
+    localStorage.setItem("datapodcast", JSON.stringify(data));
+  };
+  
