@@ -80,8 +80,7 @@ import { toast } from "react-toastify";
           const result = await response.json();
           setData(result);
           if (result.audioUrl) {
-            
-            audioRef.current.src = result.audioUrl;
+             audioRef.current.src = result.audioUrl;
             audioRef.current.addEventListener("loadedmetadata", () => {
               setDuration(audioRef.current.duration);
             });
@@ -91,7 +90,7 @@ import { toast } from "react-toastify";
           console.log(error);
         }
   };
-  export const saveandunsaved = async (id) => {
+  export const saveandunsaved = async (id,setData) => {
       try {
         const response = await fetch(`${Domain}/api/SavedPodCat/toggle/${id}`, {
           method: "POST",
@@ -111,6 +110,8 @@ import { toast } from "react-toastify";
           return;
         }
         const result = await response.json();
+        setData(result);
+
         toast.success(result.message, {
           icon: <FaCheckCircle color="green" />,
         });
@@ -144,7 +145,6 @@ import { toast } from "react-toastify";
         console.error("❌ Error fetching saved podcasts:", error);
       }
   };
-
   export const togglePlay = async (setIsPlay, audioRef, isPlay, data) => {
     if (!data?.audioUrl) return;
   

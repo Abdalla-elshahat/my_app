@@ -8,17 +8,19 @@ import { Domain} from "../../utels/consts";
 import Cookies from "js-cookie";
 import { getEmail, getProfile } from "../../apicalls/navbar";
 import Notification from "./notifactions"
+import { getAllUsers } from "../../apicalls/follows";
 function Navbar() {
+  const token =Cookies.get("token")
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState("")
   const [userPicture, setUserPicture] = useState("")
   const [userEmail, setUserEmail] = useState("")
-  const token =Cookies.get("token")
-  const navigate = useNavigate();
   const [notifications, setNotifications] = useState(false);
+  const [search, setSearch] = useState("");
+  const [users, setUsers] = useState([]);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -26,8 +28,14 @@ function Navbar() {
   useEffect(() => {
       getProfile(setUserName, setUserPicture);
       getEmail(setUserEmail);
+      getAllUsers(setUsers);
   }, []);
-
+  
+    // تصفية المستخدمين بناءً على البحث
+    const filteredUsers = users.filter((user) =>
+      user.displayname.toLowerCase().includes(search.toLowerCase())
+    );
+  
   return (
     <div className=" bg-gray-100 dark:bg-gray-900">
       <ToastContainer />
@@ -58,9 +66,32 @@ function Navbar() {
                     type="text"
                     className=" block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 bg-gray-50 focus:outline-none  focus:ring-1 focus:ring-[#3362C8] focus:border-[#3362C8] sm:text-sm"
                     placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                  value={search}
+                 onChange={(e) => setSearch(e.target.value)}
                   />
+{search && (
+  <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+    {filteredUsers.length > 0 ? (
+      filteredUsers.map((user) => (
+        <Link
+          key={user.id}
+          to={`/profileusers/${user.id}`}
+          className="flex items-center p-2 hover:bg-gray-100 transition-colors"
+          onClick={() => setSearch("")} // لإخفاء النتائج عند الضغط
+        >
+          <img
+            src={`${Domain}/${user.pictureUrl}` || "/default-profile.png"}
+            alt={user.displayname}
+            className="w-8 h-8 rounded-full object-cover mr-2"
+          />
+          <span className="text-sm">{user.displayname}</span>
+        </Link>
+      ))
+    ) : (
+      <div className="p-2 text-sm text-gray-500">No users found</div>
+    )}
+  </div>
+)}
                 </div>
               </div>
             </div>

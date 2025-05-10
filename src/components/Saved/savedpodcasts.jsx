@@ -51,7 +51,7 @@ function Savedpodcast({ onClose }) {
                   <CiCircleMinus className="text-[24px] text-[#4d4a4a]" />
                 </button>
                 
-                <Link to={`/Podcasts/${podcast.id}`}>
+                <Link to={`/Podcasts/${parseInt(podcast.podcastId)}`}>
                   <img
                     src={podcast.imageUrl}
                     alt={podcast.title}

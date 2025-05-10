@@ -7,7 +7,9 @@ function Podcasts() {
   return (
     <div className="Podcasts">
       <Navbar />
-      <HeroSection />
+      {
+       localStorage.getItem("datapodcast") && <HeroSection />
+      }
       <TopShows />
       <ForYou />
     </div>

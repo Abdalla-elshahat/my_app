@@ -1,4 +1,6 @@
 import {FaBookmark,FaBackward,FaForward} from "react-icons/fa";
+import Marquee from "react-fast-marquee";
+import { FaRegBookmark } from "react-icons/fa6";
 import { FaPlay } from "react-icons/fa6";
 import { CgPlayPause } from "react-icons/cg";
 import { useEffect, useRef, useState } from "react";
@@ -11,7 +13,7 @@ export default function PodcastsView() {
   const [data, setData] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [Saved, setSaved] = useState([]);
+  const [Saved, setSaved] = useState(false);
   const { id } = useParams();
   const audioRef = useRef(new Audio());
   useEffect(() => {
@@ -23,9 +25,8 @@ export default function PodcastsView() {
       audioRef.current.removeEventListener("timeupdate", updateTime);
     };
   }, [id]);
-
-
-
+useEffect(() => {
+},[setSaved])
   const handleSeek = (e) => {
     const newTime = e.target.value;
     setCurrentTime(newTime);
@@ -56,13 +57,44 @@ export default function PodcastsView() {
 
   return (
     <div className="max-w-sm mx-auto bg-white shadow-lg rounded-b-2xl rounded-t-2xl overflow-hidden mt-10">
+      <style>
+{`
+  .marquee {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .marquee p {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scrollText 10s linear infinite;
+  }
+
+  @keyframes scrollText {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+  }
+`}
+</style>
       <ToastContainer/>
       <div className="relative bg-blue-600 text-white py-6 px-4 rounded-b-2xl text-center pb-20">
-        <h2 className="text-sm font-semibold">Podcast Details</h2>
-        <FaBookmark
-          onClick={() => saveandunsaved(id,setSaved)}
+        <Marquee>
+       <h2 className="text-center text-lg font-semibold mt-4 text-white">{data.title}</h2>
+        </Marquee>
+        {
+          Saved.isSaved ? (
+                   <FaBookmark
+          onClick={() => {saveandunsaved(id,setSaved);}}
           className="absolute top-4 right-4 text-lg cursor-pointer"
         />
+          ) : (
+                  <FaRegBookmark
+          onClick={() => {saveandunsaved(id,setSaved);}}
+          className="absolute top-4 right-4 text-lg cursor-pointer"
+        />
+          )
+        }
+
       </div>
 
       <div className="relative flex justify-center">
@@ -74,7 +106,8 @@ export default function PodcastsView() {
       </div>
 
       <div className="pt-12 pb-6 px-6 bg-white rounded-b-2xl mt-10">
-        <h3 className="text-center text-lg font-semibold mt-4">{data.title}</h3>
+
+    
         <p className="text-sm text-gray-600 mt-2 line-clamp-3 text-center">
           {data.description.split("\n")[0]}
         </p>
