@@ -8,6 +8,7 @@ export function getProfile(setdetails, setNewPhot,setLearning) {
       },
     })
     .then((res) => {
+      
       setdetails(res.data.data);
       setLearning(res.data.data.education)
       if (res.data.data.pictureUrl) {

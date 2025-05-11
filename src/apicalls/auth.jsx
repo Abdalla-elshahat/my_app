@@ -224,6 +224,7 @@ export async function Login(e,  password, email, setError, setLoading, Setemail,
       const data = await response.json();
       Setemail(email)
       Cookies.set("token", data.token);
+      Cookies.set("userId", data.userId);
       toast.success("Logged in successfully", { icon: <FaCheckCircle color="green" /> });
       setTimeout(() => {
         navigate("/");
