@@ -57,12 +57,12 @@ function AddFriends() {
               <button
                 onClick={(e) => followUser(user.id,e,setUsers)}
                 className={`px-4 py-2 rounded-full transition-all ${
-                  user.isFollowedByCurrentUser
+                  user.isFollowedByMe
                     ? "bg-red-500 text-white hover:bg-red-600"
                     : "bg-blue-500 text-white hover:bg-blue-600"
                 }`}
               >
-                {user.isFollowedByCurrentUser? "Unfollow" : "Follow"}
+                {user.isFollowedByMe? "Unfollow" : "Follow"}
               </button>
             </div>
           ))

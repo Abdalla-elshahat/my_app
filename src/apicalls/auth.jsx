@@ -360,27 +360,27 @@ export async function changePassword(e,confirmpassword, password, email, setErro
   }
 }
 
-export async function Logout(e ,setError, setLoading, navigate){
-e.preventDefault();
-setError("");
-setLoading(true);
-try {
- const response= Cookies.remove("token");
-  setLoading(false);
-  if (response.ok) {
+export async function Logout(e, setError, setLoading, navigate) {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    Cookies.remove("token"); // احذف التوكن
+    setLoading(false);
+
     toast.success("Logged out successfully", {
       icon: <FaCheckCircle color="green" />,
     });
-    setTimeout(() => navigate("/login"), 500);
-  } else {
-    const errorData = await response.json();
-    toast.error(`Error: ${errorData.message || "Unknown error"}`, {
+setTimeout(() => {
+      navigate("/login");
+    }
+    , 1000); // ✅ استخدم setTimeout لتأخير الانتقال
+  } catch (error) {
+    setLoading(false);
+    setError("Error Logged out. Please try again.");
+    toast.error(`Error: ${error.message || "Unknown error"}`, {
       icon: <FaExclamationCircle color="red" />,
     });
   }
-} catch {
-  setLoading(false);
-  setError("Error Logged out Please try again.");
-}
-
 }

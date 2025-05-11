@@ -14,10 +14,16 @@ import PopupModal from "./popupintersts.jsx";
 import { LearningDataContext } from "../../Contexts/LearningData";
 import axios from "axios";
 import { getGridClass, getImageClass } from "../../apicalls/logics.jsx";
+import Popup from "../profileusers/Popup.jsx";
+import {  getmyfolloweing, getmyfollowers} from "../../apicalls/follows.jsx";
 
 function Profile() {
-  const [showDetails, setShowDetails] = useState(true);
+  const [followData, setFollowData] = useState([]);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [popupTitle, setPopupTitle] = useState("");
+  const [Profilelogin, setprofilelogin] = useState([]);
 
+  const [showDetails, setShowDetails] = useState(true);
   const [details, setdetails] = useState({});
   const [NewPhot, setNewPhot] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +49,8 @@ function Profile() {
   const [skillId, setskillId] = useState(null)
 
   const { learningggg, GetLearningByUserId, id , getId } = useContext(LearningDataContext);
+
+
 
 
   const fileInputRef = useRef(null);
@@ -98,7 +106,6 @@ function Profile() {
   
 
   useEffect(() => {
-    console.log(id)
     getId()
     GetLearningByUserId(id)
       }, [id]);
@@ -113,7 +120,6 @@ function Profile() {
         job: details.job || "",
       });
     }
-    // console.log(details)
   }, [details]);
 
   useEffect(() => {
@@ -172,12 +178,6 @@ function Profile() {
     handleCheckboxChange();
   }, []);
 
-
-
-  
-
-
-
 // skillllll
 
 
@@ -188,10 +188,6 @@ const handleSkillsChange = (selectedOptions) => {
       value: option.value,
       label: option.label,
     }));
-
-    console.log("Selected Skills (Before State Update):", prevSkills);
-    console.log("Updated Skills (New Selection):", updatedSkills);
-
     return updatedSkills;
   });
 };
@@ -432,11 +428,24 @@ function sendSkills() {
                 <div className="font-bold">{details.postsCount}</div>
                 <div className="text-gray-600">posts</div>
               </div>
-              <div className="text-center">
+              <div className="text-center cursor-pointer"
+                 onClick={() => {
+                                getmyfollowers(setFollowData);
+                                setPopupTitle("Followers");
+                                setPopupOpen(true);
+                              }}
+              >
                 <div className="font-bold">{details.followersCount}</div>
                 <div className="text-gray-600">followers</div>
               </div>
-              <div className="text-center">
+
+              <div className="text-center cursor-pointer"
+                 onClick={() => {
+                                getmyfolloweing(setFollowData);
+                                setPopupTitle("Following");
+                                setPopupOpen(true);
+                              }}
+              >
                 <div className="font-bold">{details.followingCount}</div>
                 <div className="text-gray-600">following</div>
               </div>
@@ -919,8 +928,17 @@ className="w-10 h-10 rounded-full object-cover"
                   }
          
                 </div>
-
       </div>
+            {/* Popups */}
+      {popupOpen && (
+        <Popup
+          title={popupTitle}
+          data={followData}
+          setdate={setFollowData}
+          onClose={() => setPopupOpen(false)}
+          Profilelogin={Profilelogin}
+        />
+      )}
     </div>
   );
 }

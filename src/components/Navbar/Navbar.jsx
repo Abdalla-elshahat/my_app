@@ -1,5 +1,5 @@
 import "../Navbar/Navbar.css";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { Search, Bell, Menu, X } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -29,7 +29,7 @@ function Navbar() {
       getProfile(setUserName, setUserPicture);
       getEmail(setUserEmail);
       getAllUsers(setUsers);
-  }, []);
+  }, [token]);
   
     // تصفية المستخدمين بناءً على البحث
     const filteredUsers = users.filter((user) =>
@@ -115,15 +115,13 @@ function Navbar() {
 
                   </div>
                   <div className="auth-buttons">
-                    <button className="login-btn py-[4px] px-[18px]">
-                      <Link
-                        onClick={(e) =>
-                          Logout(e, setError, setLoading, navigate)
-                        }
-                      >
-                        Logout
-                      </Link>
-                    </button>
+                   <button
+  className="login-btn py-[4px] px-[18px]"
+  onClick={(e) => Logout(e, setError, setLoading, navigate)}
+>
+  Logout
+</button>
+
                   </div>
                 </>
               ) : (
@@ -258,14 +256,8 @@ function Navbar() {
             </button>
             {notifications && <Notification />}
 
-                    <button className="login-btn py-[4px] px-[18px]">
-                      <Link
-                        onClick={(e) =>
-                          Logout(e, setError, setLoading, navigate)
-                        }
-                      >
+                    <button className="login-btn py-[4px] px-[18px]" onClick={(e) =>Logout(e, setError, setLoading, navigate)}>
                         Logout
-                      </Link>
                     </button>
                   </div>
     </>

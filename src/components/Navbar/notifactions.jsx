@@ -9,9 +9,9 @@ function Notification() {
   const [notifications, setNotifications] = useState([]);
   useEffect(() => {
     getNotifications(setNotifications);
-  }, []);
+  }, [notifications]);
   return (
-    <div className="w-max max-w-md mx-auto p-4 bg-white rounded-lg shadow-lg absolute md:-left-40 z-50 md:mt-5 sm:right-2 sm:mt-12 scroll-auto max-h-96 overflow-y-auto">
+    <div className="not w-80 max-w-md mx-auto p-4 bg-white rounded-lg shadow-lg absolute md:-left-40 z-50 md:mt-5 sm:right-2 sm:mt-12 scroll-auto max-h-96 overflow-y-auto ">
       <h2 className="text-lg font-semibold mb-4">Notifications</h2>
       <div className="space-y-2">
         {notifications.length === 0 ? (

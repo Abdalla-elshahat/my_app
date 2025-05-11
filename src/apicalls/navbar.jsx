@@ -31,36 +31,44 @@ export function getEmail(setUserEmail) {
       console.error("Error fetching profile:", err);
     });
 }
+export const getNotifications = async (setNotifications) => {
+  try {
+    const response = await fetch(`${Domain}/api/notifications/my-notifications`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch notifications");
+    const result = await response.json();
 
- export const getNotifications = async (setNotifications) => {
-    try {
-      const response = await fetch(`${Domain}/api/notifications/my-notifications`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch notifications");
-      const result = await response.json();
-      setNotifications(result.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    // خلي يعرض فقط الإشعارات الغير مقروءة
+    const unreadNotifications = result.data.filter(noti => noti.isRead === false);
 
-  export const markAsRead = async (id,setNotifications) => {
-    try {
-      const response = await fetch(`${Domain}/api/notifications/mark-as-read/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) throw new Error("Failed to mark notification as read");
-      setNotifications((prev) => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    setNotifications(unreadNotifications);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const markAsRead = async (id, setNotifications) => {
+  try {
+    const response = await fetch(`${Domain}/api/notifications/mark-as-read/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error("Failed to mark notification as read");
+
+    // بعد ما تعمل مارك كمقروء، شيل الإشعار ده من القائمة
+    setNotifications((prev) =>
+      prev.filter((noti) => noti.id !== id)
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};

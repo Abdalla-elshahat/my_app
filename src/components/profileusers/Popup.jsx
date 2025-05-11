@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Domain } from "../../utels/consts";
 import { Link } from "react-router-dom"
 import { followUser } from "../../apicalls/follows";
@@ -66,12 +66,12 @@ function Popup({ title, data,setdate, onClose,Profilelogin}) {
     <button
       onClick={(e) => followUser(user.id, e, setdate)}
       className={`px-4 py-2 rounded-full transition-all ${
-        user.isFollowedByCurrentUser
+        user.isFollowedByMe
           ? "bg-red-500 text-white hover:bg-red-600"
           : "bg-blue-500 text-white hover:bg-blue-600"
       }`}
     >
-      {user.isFollowedByCurrentUser ? "Unfollow" : "Follow"}
+      {user.isFollowedByMe ? "Unfollow" : "Follow"}
     </button>
   )
 }

@@ -1,19 +1,12 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import "./App.css";
 import Main from "./main";
-import { token } from "./utels/consts";
-import { useNavigate } from "react-router-dom";
 import { SavedPostsProvider } from "./Contexts/SavedPostsContext";
 import { LearningDataProvider } from "./Contexts/LearningData";
 import GoogleScriptLoader from "./GoogleScriptLoader";
 export const EmailContext = createContext();
-
 function App() {
   const [email, Setemail] = useState("");
-  // const nav=useNavigate();
-  // if(!token){
-  //    nav("/signup"||"/login")
-  // }
   return (
     <EmailContext.Provider value={{ email, Setemail }}>
     <LearningDataProvider>

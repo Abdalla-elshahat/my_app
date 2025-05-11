@@ -60,7 +60,7 @@ import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
       // تحديث حالة المتابعة بعد نجاح الطلب
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === id ? { ...user, isFollowedByCurrentUser: !user.isFollowedByCurrentUser } : user
+          user.id === id ? { ...user, isFollowedByMe: !user.isFollowedByMe } : user
         )
       );
     } catch (error) {
@@ -172,6 +172,57 @@ import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
   
       const result = await response.json();
       setfollowdata(result.data);
+    //   toast.success(result.message);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      toast.error("Failed to fetch user data");
+    }
+  };
+
+    export const getmyfollowers = async ( setfollowdata) => {
+    try {
+      const response = await fetch(`${Domain}/api/Follower/my-followers`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(`Error fetching user: ${errorData.message || "Unknown error"}`);
+        return;
+      }
+  
+      const result = await response.json();
+      setfollowdata(result.data);
+    //   toast.success(result.message);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      toast.error("Failed to fetch user data");
+    }
+  };
+  
+  export const getmyfolloweing = async ( setfollowdata) => {
+    try {
+      const response = await fetch(`${Domain}/api/Follower/my-following`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(`Error fetching user: ${errorData.message || "Unknown error"}`);
+        return;
+      }
+  
+      const result = await response.json();
+      setfollowdata(result.data);
+      console.log(result.data)
     //   toast.success(result.message);
     } catch (error) {
       console.error("Error fetching user:", error);
