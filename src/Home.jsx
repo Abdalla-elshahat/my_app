@@ -9,7 +9,8 @@ function Home() {
   const [sharedPosts, setSharedPosts] = useState([]);
   useEffect(() => {
     getAllPosts(setSharedPosts);
-  },[sharedPosts,setSharedPosts])
+    console.log(sharedPosts);
+  },[sharedPosts])
   return (
     <div className="Home">
       <Navbar />
