@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
-import "./Posts.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faComment,faHeart, faShare,faTrash, faEdit,} from "@fortawesome/free-solid-svg-icons";
+import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import AddPosts from "./addposts/Addposts";
 import { Domain, Id } from "../../utels/consts";
 import AddComment from "./comments/AddComment";
-import ReplyComment from "./comments/ReplyComment";
-import { fetchCommentsByPostId, fetchLikedUsers, getAllPosts, handleDeleteComment, handleDeletePost, handleShare, handleUpdateComment, handleUpdatePost, toggleLike } from "../../apicalls/posts";
+import {
+  fetchCommentsByPostId,
+  fetchLikedUsers,
+  getAllPosts,
+  handleDeleteComment,
+  handleDeletePost,
+  handleUpdateComment,
+  handleUpdatePost,
+  toggleLike,
+} from "../../apicalls/posts";
 import Comment from "./comments/comment";
+import PostActions from "./comments/PostActions";
 
 const Posts = () => {
   const [data, setData] = useState([]);
@@ -18,62 +26,26 @@ const Posts = () => {
   const [editPost, setEditPost] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editImages, setEditImages] = useState([]);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [shareText, setShareText] = useState("");
-  const [postToShare, setPostToShare] = useState(null);
   const [showLikesPopup, setShowLikesPopup] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
   const [currentLikedPostId, setCurrentLikedPostId] = useState(null);
   const [editComment, setEditComment] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
 
-  const [showCommentsPopup, setShowCommentsPopup] = useState(false);
-const [currentPostForComments, setCurrentPostForComments] = useState(null);
-const handleShowComments = (postId, post) => {
-  if (selectedPostId === postId) {
-    setSelectedPostId(null);
-  } else {
-    setSelectedPostId(postId);
-    setCurrentPostForComments(post);
-    setShowCommentsPopup(true);
-    if (!postComments[postId]) {
-      fetchCommentsByPostId(postId, setPostComments, setIsLoading);
+  const handleShowComments = (postId, post) => {
+    if (selectedPostId === postId) {
+      setSelectedPostId(null);
+    } else {
+      setSelectedPostId(postId);
+      if (!postComments[postId]) {
+        fetchCommentsByPostId(postId, setPostComments, setIsLoading);
+      }
     }
-  }
-};
+  };
+
   useEffect(() => {
     getAllPosts(setData);
   }, []);
-
-  const openShareModal = (post) => {
-    setPostToShare({
-      ...post,
-      likesCount: 0,
-      sharesCount: 0,
-      commentCount: 0,
-      isLiked: false,
-    });
-    setShareText("");
-    setIsShareModalOpen(true);
-  };
-  //   console.log("postId clicked:", postId);
-  //   setSelectedPostId(postId);
-  //   if (!postComments[postId]) {
-  //     fetchCommentsByPostId(postId,postId,setPostComments,setIsLoading);
-  //   }
-  // };
-// const handleShowComments = (postId) => {
-//   if (selectedPostId === postId) {
-//     // إغلاق الكومنت لو هو ظاهر بالفعل
-//     setSelectedPostId(null);
-//   } else {
-//     // فتح الكومنت
-//     setSelectedPostId(postId);
-//     if (!postComments[postId]) {
-//       fetchCommentsByPostId(postId,setPostComments,setIsLoading);
-//     }
-//   }
-// };
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -84,15 +56,43 @@ const handleShowComments = (postId, post) => {
   }, []);
 
   return (
-    <div className="all-posts">
+    <div className="flex flex-col items-center w-full px-4">
       <AddPosts onPostAdded={getAllPosts} />
+      <div className="flex flex-col w-full mt-10 max-w-[1150px] gap-12">
+        {data.map((post) => (
+          <div
+            key={post.shareId || post.postId}
+            className="w-full bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:-translate-y-1 p-4"
+          >
+            <PostActions
+              post={post}
+              Id={Id}
+              setEditPost={setEditPost}
+              setEditTitle={setEditTitle}
+              setEditImages={setEditImages}
+              handleDeletePost={handleDeletePost}
+              setData={setData}
+            />
 
-      <div className="posts">
-        {data.map((post, i) => (
-          <div className="post" key={post.shareId || post.postId} post={post}>
-            <div className="flex justify-center gap-2">
-              {post.images.length > 0 &&
-                post.images.map((image, index) => (
+            <div className="flex gap-3 items-center mb-3">
+              <img
+                src={post.user?.pictureUrl ? `${Domain}${post.user.pictureUrl}` : "/default-avatar.png"}
+                alt={post.user?.displayName || "Unknown User"}
+                className="w-10 h-10 rounded-full"
+              />
+              <div>
+                <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
+                <p className="text-xs text-gray-500">{new Date(post.postDate).toLocaleDateString()}</p>
+              </div>
+            </div>
+
+            <p className="text-lg font-semibold text-gray-900 break-words mb-3">
+              {post.title || ""}
+            </p>
+
+            {post.images.length > 0 && (
+              <div className="flex justify-center flex-wrap gap-2 mb-4">
+                {post.images.map((image, index) => (
                   <img
                     key={index}
                     src={`${Domain}${image}`}
@@ -101,6 +101,35 @@ const handleShowComments = (postId, post) => {
                     onClick={() => setSelectedImage(`${Domain}${image}`)}
                   />
                 ))}
+              </div>
+            )}
+
+            <div className="flex justify-end items-center gap-4 text-gray-600 text-xl">
+              <button
+                onClick={() => handleShowComments(post.postId || post.shareId, post)}
+                className={`flex items-center gap-1 ${selectedPostId === (post.postId || post.shareId) ? "text-blue-600" : ""}`}
+              >
+                <FontAwesomeIcon icon={faComment} />
+                {post.commentCount || 0}
+              </button>
+              <FontAwesomeIcon
+                icon={faHeart}
+                onClick={() => toggleLike(post, setData)}
+                className={`cursor-pointer ${post.isLiked ? "text-red-500" : "text-gray-400"}`}
+              />
+              <span
+                onClick={() =>
+                  fetchLikedUsers(
+                    post.postId || post.shareId,
+                    setLikedUsers,
+                    setCurrentLikedPostId,
+                    setShowLikesPopup
+                  )
+                }
+                className="cursor-pointer text-sm"
+              >
+                {post.likesCount || 0}
+              </span>
             </div>
 
             {selectedImage && (
@@ -116,108 +145,6 @@ const handleShowComments = (postId, post) => {
               </div>
             )}
 
-            <div className="post-content">
-              <div className="toppost">
-                <div className="left ">
-                  <span>
-                    <img
-                      src={
-                        post.user?.pictureUrl
-                          ? `${Domain}${post.user.pictureUrl}`
-                          : "/default-avatar.png"
-                      }
-                      alt={post.user?.displayName || "Unknown User"}
-                      className="post-author-image "
-                    />
-                  </span>
-                  <span>
-                    <p className="post-author">
-                      {post.user?.displayName || "Unknown User"}
-                    </p>
-                    <p className="dateofpost">
-                      {new Date(post.postDate).toLocaleDateString()}
-                    </p>
-                  </span>
-                </div>
-
-                <div className="right">
-                  <span
-                    onClick={() => openShareModal(post)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <FontAwesomeIcon icon={faShare} /> {post.sharesCount || 0}
-                  </span>
-
-<button
-  onClick={() => handleShowComments(post.postId || post.shareId, post)}
-  className={`ml-3 flex items-center gap-1 ${
-    selectedPostId === (post.postId || post.shareId) ? "text-blue-600" : ""
-  }`}
->
-  <FontAwesomeIcon icon={faComment} />
-  {post.commentCount || 0}
-</button>
-
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    onClick={() => toggleLike(post,setData)}
-                    style={{
-                      cursor: "pointer",
-                      color: post.isLiked ? "red" : "gray",
-                    }}
-                  />{" "}
-                  <span
-                    onClick={() => fetchLikedUsers(post.postId || post.shareId,setLikedUsers,setCurrentLikedPostId,setShowLikesPopup)}
-                    style={{ cursor: "pointer" }}
-                    className="likes-count"
-                  >
-                    {post.likesCount || 0}
-                  </span>
-                  {/* && post.postId */}
-                  {post.user?.userId === Id  && (
-                    <div className="post-actions">
-                      <button
-                        onClick={() => {
-                          setEditPost(post);
-                          setEditTitle(post.title);
-                          setEditImages([]);
-                        }}
-                        style={{ fontSize: "18px" }}
-                        className="ml-3 text-blue-600 hover:text-blue-800 font-normal transition-colors duration-200 px-1 py-1 rounded-md bg-blue-50 hover:bg-blue-100"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeletePost(post.postId,setData)}
-                        style={{ fontSize: "18px" }}
-                        className="ml-3 text-red-600 hover:text-red-800 font-normal transition-colors duration-200 px-1 py-1 rounded-md bg-red-50 hover:bg-red-100"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <h3 className="post-title">{post.title || ""}</h3>
-            </div>
-
-            {post.type === "Share" && post.sharedFrom && (
-              <div className="shared-from-info p-2 mt-4 border-t border-gray-300">
-                <div className="original-author flex items-center mb-2">
-                  <img
-                    src={`${Domain}${post.sharedFrom.user.pictureUrl}`}
-                    className="w-10 h-10 rounded-full mr-2"
-                    alt={post.sharedFrom.user?.displayName || "Unknown User"}
-                  />
-                  <strong>
-                    {post.sharedFrom.user?.displayName || "Unknown User"}
-                  </strong>
-                </div>
-                <div>{post.sharedFrom.title}</div>
-              </div>
-            )}
-
             <AddComment
               postId={post.postId}
               shareId={post.shareId}
@@ -226,8 +153,8 @@ const handleShowComments = (postId, post) => {
               }}
             />
 
-            {(selectedPostId === post.postId ||selectedPostId === post.shareId) && (
-<Comment
+            {(selectedPostId === post.postId || selectedPostId === post.shareId) && (
+              <Comment
                 post={post}
                 isLoading={isLoading}
                 postComments={postComments}
@@ -238,8 +165,7 @@ const handleShowComments = (postId, post) => {
                 setEditCommentText={setEditCommentText}
                 handleUpdateComment={handleUpdateComment}
                 handleDeleteComment={handleDeleteComment}
-
-                />
+              />
             )}
           </div>
         ))}
@@ -268,7 +194,7 @@ const handleShowComments = (postId, post) => {
                 Cancel
               </button>
               <button
-                onClick={()=>handleUpdatePost(editPost,editTitle,editImages,setEditPost)}
+                onClick={() => handleUpdatePost(editPost, editTitle, editImages, setEditPost)}
                 className="px-4 py-2 bg-blue-600 text-white rounded"
               >
                 Update
@@ -279,64 +205,40 @@ const handleShowComments = (postId, post) => {
       )}
 
       {showLikesPopup && (
-        <div className="modal-overlay" onClick={() => setShowLikesPopup(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Liked by</h2>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          onClick={() => setShowLikesPopup(false)}
+        >
+          <div
+            className="bg-white rounded-lg w-full max-w-md p-6 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Liked by</h2>
               <button
                 onClick={() => setShowLikesPopup(false)}
-                className="close-btn"
+                className="text-2xl font-bold text-gray-500 hover:text-gray-700"
               >
                 &times;
               </button>
             </div>
-            <div className="liked-users-list">
+            <div className="space-y-4 max-h-96 overflow-y-auto">
               {likedUsers.length > 0 ? (
                 likedUsers.map((user) => (
-                  <div key={user.userId} className="liked-user">
+                  <div key={user.userId} className="flex items-center gap-3">
                     <img
-                      src={
-                        user.user.pictureUrl
-                          ? `${Domain}${user.user.pictureUrl}`
-                          : "/default-avatar.png"
-                      }
+                      src={user.user.pictureUrl ? `${Domain}${user.user.pictureUrl}` : "/default-avatar.png"}
                       alt={user.user.displayName}
-                      className="user-avatar"
+                      className="w-10 h-10 rounded-full"
                     />
-                    <span className="user-name">{user.user.displayName}</span>
+                    <span className="text-sm font-medium">
+                      {user.user.displayName}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p className="no-likes">No likes yet</p>
+                <p className="text-sm text-gray-500">No likes yet</p>
               )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isShareModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Share Post</h2>
-            <textarea
-              className="w-full border p-2 mb-4 rounded"
-              value={shareText}
-              onChange={(e) => setShareText(e.target.value)}
-              placeholder="Write something for your shared post..."
-            />
-            <div className="modal-actions">
-              <button
-                className="bg-slate-400 p-2 rounded text-white"
-                onClick={() => setIsShareModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-500 p-2 rounded text-white"
-                onClick={() => handleShare(postToShare,shareText,setData,setIsShareModalOpen,setShareText)}
-              >
-                Share
-              </button>
             </div>
           </div>
         </div>
@@ -344,4 +246,5 @@ const handleShowComments = (postId, post) => {
     </div>
   );
 };
+
 export default Posts;

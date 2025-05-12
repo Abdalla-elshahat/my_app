@@ -3,103 +3,116 @@ import { Domain, Id } from "../../../utels/consts";
 import ReplyComment from "./ReplyComment";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-const Comment=(props)=>{
-    const { post, isLoading, postComments, selectedPostId, editComment, setEditComment, editCommentText, setEditCommentText, handleUpdateComment, handleDeleteComment } = props;
-      const handleEditComment = (comment) => {
+const Comment = (props) => {
+  const {
+    post,
+    isLoading,
+    postComments,
+    selectedPostId,
+    editComment,
+    setEditComment,
+    editCommentText,
+    setEditCommentText,
+    handleUpdateComment,
+    handleDeleteComment,
+  } = props;
+
+  const handleEditComment = (comment) => {
     setEditComment(comment);
     setEditCommentText(comment.text);
   };
-    return(
-        <>
-             <div className="comments-section">
-                        {isLoading ? (
-                          <p>Loading comments...</p>
-                        ) : postComments[post.shareId || post.postId]?.length > 0 ? (
-                          postComments[post.shareId || post.postId].map((comment) => (
-                            <div key={comment.id} className="comment">
-                              <div
-                                className="comment-header"
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "8px",
-                                }}
-                              >
-                                <img
-                                  src={`${Domain}${comment.user.pictureUrl}`}
-                                  alt={`${comment.user.displayName}'s profile`}
-                                  style={{
-                                    width: "30px",
-                                    height: "30px",
-                                    borderRadius: "50%",
-                                  }}
-                                />
-                                <strong>{comment.user.displayName}</strong>
-                              </div>
-        
-                              {editComment?.id === comment.id ? (
-                                <>
-                                  <textarea
-                                    value={editCommentText}
-                                    onChange={(e) => setEditCommentText(e.target.value)}
-                                    className="w-full p-2 border rounded mt-1 mb-1"
-                                  />
-                                  <div className="flex gap-2 mb-2">
-                                    <button
-                                      onClick={(e)=>handleUpdateComment(editComment,editCommentText, selectedPostId,setEditComment,setEditCommentText)}
-                                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                                    >
-                                      Save
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        setEditComment(null);
-                                        setEditCommentText("");
-                                      }}
-                                      className="text-gray-500 px-3 py-1 hover:underline"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </>
-                              ) : (
-                                <p>{comment.text}</p>
-                              )}
-        
-                              {comment.userId === Id && (
-                                <div className="comment-actions mt-1 flex gap-2">
-                                  <button
-                                    onClick={() => handleEditComment(comment)}
-                                    className="edit-comment-btn text-blue-500"
-                                    title="Edit comment"
-                                  >
-                                    <FontAwesomeIcon icon={faEdit} />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteComment(comment.id,selectedPostId)}
-                                    className="delete-comment-btn text-red-500"
-                                    title="Delete comment"
-                                  >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                  </button>
-                                </div>
-                              )}
-        
-                              {/* Reply Component */}
-                              <ReplyComment
-                                commentId={comment.id}
-                                selectedPostId={selectedPostId}
-                                onReplyAdded={(newReply) => {
-                                  console.log("New reply:", newReply);
-                                }}
-                              />
-                            </div>
-                          ))
-                        ) : (
-                          <p>No comments yet.</p>
-                        )}
-                      </div>
-        </>
-    )
-}
-export default Comment
+
+  return (
+    <div className="comments-section space-y-4">
+      {isLoading ? (
+        <p>Loading comments...</p>
+      ) : postComments[post.shareId || post.postId]?.length > 0 ? (
+        postComments[post.shareId || post.postId].map((comment) => (
+          <div key={comment.id} className="comment bg-white p-4 rounded-lg shadow-sm">
+            <div className="comment-header flex items-center gap-3 mb-2">
+              <img
+                src={`${Domain}${comment.user.pictureUrl}`}
+                alt={`${comment.user.displayName}'s profile`}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+              <div>
+                <strong className="text-sm font-medium">{comment.user.displayName}</strong>
+                <p className="text-xs text-gray-500">{comment.user.email}</p>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-start">
+              {/* Left side: Text */}
+              <div className="flex-1">
+                {editComment?.id === comment.id ? (
+                  <>
+                    <textarea
+                      value={editCommentText}
+                      onChange={(e) => setEditCommentText(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md mb-2"
+                      rows={3}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) =>
+                          handleUpdateComment(editComment, editCommentText, selectedPostId, setEditComment, setEditCommentText)
+                        }
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditComment(null);
+                          setEditCommentText("");
+                        }}
+                        className="text-gray-500 hover:underline px-4 py-2"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-md text-gray-700 font-bold ">{comment.text}</p>
+                )}
+              </div>
+
+              {/* Right side: Edit/Delete icons */}
+              {comment.userId === Id && (
+                <div className="comment-actions flex flex-col items-center gap-2">
+                  <button
+                    onClick={() => handleEditComment(comment)}
+                    className="text-blue-500 hover:text-blue-600"
+                    title="Edit comment"
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteComment(comment.id, selectedPostId)}
+                    className="text-red-500 hover:text-red-600"
+                    title="Delete comment"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Reply Component */}
+            <ReplyComment
+              commentId={comment.id}
+              selectedPostId={selectedPostId}
+              onReplyAdded={(newReply) => {
+                console.log("New reply:", newReply);
+              }}
+            />
+          </div>
+        ))
+      ) : (
+        <p>No comments yet.</p>
+      )}
+    </div>
+  );
+};
+
+export default Comment;

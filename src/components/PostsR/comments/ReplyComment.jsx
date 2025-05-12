@@ -1,13 +1,7 @@
-
-
-// // ///////////////////////////////////////////////
-
 import { useEffect, useState } from "react";
 import { token, Domain } from "../../../utels/consts.jsx";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import "./ReplyComment.css";
-
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -17,7 +11,7 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
   const [showTextarea, setShowTextarea] = useState(false);
   const [editingReplyId, setEditingReplyId] = useState(null);
   const [editReplyText, setEditReplyText] = useState("");
-
+  
   let currentUserId = null;
   try {
     const decoded = jwtDecode(token);
@@ -159,11 +153,11 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
   };
 
   return (
-    <div className="reply-comment p-2 border-t mt-2">
+    <div className="p-4 border-t mt-4">
       {!showTextarea ? (
         <button
           onClick={() => setShowTextarea(true)}
-          className="text-sm text-blue-500 hover:underline"
+          className="text-sm text-blue-600 hover:underline"
         >
           Reply
         </button>
@@ -173,14 +167,14 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder="Write your reply..."
-            className="rounded border p-2 w-full mb-2"
+            className="rounded-lg border p-2 w-full mb-2 text-gray-700"
           />
           <div className="flex gap-2">
             <button
               onClick={() =>
                 handleReplySubmit(commentId, replyText, selectedPostId)
               }
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
             >
               Submit
             </button>
@@ -195,16 +189,16 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
       )}
 
       {replies.length > 0 && (
-        <div className="mt-4 pl-4 border-l-2 border-gray-200 bg-gray-200">
+        <div className="mt-4 pl-4 border-l-2 border-gray-200">
           <h4 className="font-semibold mb-2 text-sm text-gray-700">Replies:</h4>
           {replies.map((reply) => (
-            <div key={reply.id} className="mb-2 p-2 bg-gray-300 rounded">
-              <div className="reply-header flex items-center justify-between">
+            <div key={reply.id} className="mb-2 p-3 bg-gray-100 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <img
                     src={`${Domain}${reply.user.pictureUrl}`}
                     alt={`${reply.user.displayName}'s profile`}
-                    className="w-6 h-6 rounded-full"
+                    className="w-8 h-8 rounded-full"
                   />
                   <strong>{reply.user?.displayName || "Anonymous"}</strong>
                 </div>
@@ -214,14 +208,14 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
                     <button
                       onClick={() => handleEditReply(reply.id, reply.text)}
                       title="Edit"
-                      className="text-[#4278ED]"
+                      className="text-blue-600"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
                       onClick={() => handleDeleteReply(reply.id)}
                       title="Delete"
-                      className="text-[#DC2626]"
+                      className="text-red-600"
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
@@ -234,12 +228,12 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
                   <textarea
                     value={editReplyText}
                     onChange={(e) => setEditReplyText(e.target.value)}
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded-lg"
                   />
                   <div className="flex gap-2 mt-1">
                     <button
                       onClick={handleUpdateReply}
-                      className="bg-green-500 text-white px-3 py-1 rounded"
+                      className="bg-green-500 text-white px-4 py-2 rounded-lg"
                     >
                       Update
                     </button>
@@ -255,7 +249,7 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm ml-2 mt-1">{reply.text}</p>
+                <p className="text-sm mt-1">{reply.text}</p>
               )}
             </div>
           ))}
