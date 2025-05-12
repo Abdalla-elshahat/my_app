@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import { Domain, token } from "../utels/consts";
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
  export const getAllPosts = async (setData) => {
     try {
       const response = await fetch(`${Domain}/api/Share/posts-with-shares`, {
@@ -191,6 +192,7 @@ export   const toggleLike = async (post,setData) => {
     }
   };
   
+
   export   const handleDeletePost = async (postId,setData) => {
       const confirmation = window.confirm(
         "Are you sure you want to delete this post?"
@@ -410,3 +412,32 @@ export   const toggleLike = async (post,setData) => {
            toast.error("Something went wrong. Please try again later.");
          }
        };
+         export const saveandunsavedPost = async (id,setData) => {
+      try {
+        const response = await fetch(`${Domain}/api/SavedPost/toggle-save/${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          toast.error(
+            `Error following user: ${errorData.message || "Unknown error"}`,
+            {
+              icon: <FaExclamationCircle color="red" />,
+            }
+          );
+          return;
+        }
+        const result = await response.json();
+        setData(result);
+
+        toast.success(result.message, {
+          icon: <FaCheckCircle color="green" />,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+  };

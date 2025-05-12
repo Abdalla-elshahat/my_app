@@ -3,6 +3,9 @@ import { Domain, Id } from "../../../utels/consts";
 import ReplyComment from "./ReplyComment";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import AddComment from "./AddComment";
+import { useContext } from "react";
+import { LearningDataContext } from "../../../Contexts/LearningData";
+import { Link } from "react-router-dom";
 
 const Comment = (props) => {
   const {
@@ -18,7 +21,7 @@ const Comment = (props) => {
     handleDeleteComment,
     setShowCommentsPopup,
   } = props;
-
+const { id  } = useContext(LearningDataContext);
   const handleEditComment = (comment) => {
     setEditComment(comment);
     setEditCommentText(comment.text);
@@ -41,9 +44,17 @@ const Comment = (props) => {
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div>
-                <strong className="text-sm font-medium">
-                  {comment.user.displayName}
-                </strong>
+                  {
+                                  post.user?.userId ===id? (
+                                       <Link to={`/profile`}>
+                                  <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
+                                </Link>
+                                  ) : (
+                                     <Link to={`/profileusers/${post.user?.userId}`}>
+                                  <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
+                                </Link>
+                                )
+                                }     
                 <p className="text-xs text-gray-500">{comment.user.email}</p>
               </div>
             </div>

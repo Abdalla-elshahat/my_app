@@ -2,7 +2,7 @@ import { React, useContext, useEffect, useRef, useState } from "react";
 import "./Profile.css";
 import imgSrc from "./imageProfile/BEN-KIERMAN.jpg";
 import { TfiMoreAlt } from "react-icons/tfi";
-import {Heart, MapPin, MessageCircle, Share2,} from "lucide-react";
+import { MapPin} from "lucide-react";
 import { Domain, token } from "../../utels/consts";
 import { FiCamera } from "react-icons/fi";
 import Select from "react-select";
@@ -63,44 +63,6 @@ function Profile() {
     }));
   };
 
-
-
-
-  const formatFacebookDate = (dateString) => {
-    // Handle invalid dates
-    if (!dateString || dateString.startsWith("0001-01-01")) {
-      return "No date available";
-    }
-  
-    const postDate = new Date(dateString);
-    if (isNaN(postDate.getTime())) return "Invalid date"; // Extra safety check
-  
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - postDate) / 1000);
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const diffInDays = Math.floor(diffInHours / 24);
-  
-    if (diffInSeconds < 60) return "Just now";
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInHours < 24) return postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  
-    if (diffInDays === 1) {
-      return `Yesterday at ${postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
-    }
-  
-    // If the post is from the same year, show "Mar 20 at 5:47 PM"
-    if (postDate.getFullYear() === now.getFullYear()) {
-      return postDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
-             ` at ${postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
-    }
-  
-    // If the post is from a different year, show "Mar 20, 2024 at 5:47 PM"
-    return postDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) +
-           ` at ${postDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
-  };
-  
-  
   
 
   useEffect(() => {

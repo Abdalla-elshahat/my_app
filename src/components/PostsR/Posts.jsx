@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Domain, Id } from "../../utels/consts";
-import {fetchCommentsByPostId,fetchLikedUsers, handleDeleteComment,handleDeletePost, handleUpdateComment,handleUpdatePost,toggleLike,
+import {fetchCommentsByPostId,fetchLikedUsers, handleDeleteComment,handleDeletePost, handleUpdateComment,handleUpdatePost,saveandunsavedPost,toggleLike,
 } from "../../apicalls/posts";
 import Comment from "./comments/comment";
 import PostActions from "./comments/PostActions";
+import { Link } from "react-router-dom";
+import { LearningDataContext } from "../../Contexts/LearningData";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 const Posts = ({sharedPosts}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedPostId, setSelectedPostId] = useState(null);
@@ -20,7 +23,8 @@ const Posts = ({sharedPosts}) => {
   const [editComment, setEditComment] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
   const [showCommentsPopup, setShowCommentsPopup] = useState(false);
-
+  const[Saved, setSaved] = useState([]);
+const { id  } = useContext(LearningDataContext);
   const handleShowComments = (postId, post) => {
     if (selectedPostId === postId) {
       setSelectedPostId(null);
@@ -32,8 +36,6 @@ const Posts = ({sharedPosts}) => {
     }
     setShowCommentsPopup(true);
   };
-
-
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") setSelectedImage(null);
@@ -44,7 +46,7 @@ const Posts = ({sharedPosts}) => {
 
   return (
     <div className="flex flex-col items-center w-full px-4">
-      <div className="flex flex-col w-full mt-10 max-w-[1150px] gap-12">
+      <div className="flex flex-col w-full mt-10  gap-12">
         {sharedPosts && sharedPosts.map((post) => (
           <div
             key={post.shareId || post.postId}
@@ -67,8 +69,20 @@ const Posts = ({sharedPosts}) => {
                 className="w-10 h-10 rounded-full"
               />
               <div>
-                <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
-                <p className="text-xs text-gray-500">{new Date(post.postDate).toLocaleDateString()}</p>
+                {
+                  post.user?.userId ===id? (
+                       <Link to={`/profile`}>
+                  <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
+                </Link>
+                  ) : (
+                     <Link to={`/profileusers/${post.user?.userId}`}>
+                  <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
+                </Link>
+                )
+                }     
+             
+               
+                <p className="text-xs text-gray-500">{new Date(post.createAt).toLocaleDateString()}</p>
               </div>
             </div>
 
@@ -82,7 +96,7 @@ const Posts = ({sharedPosts}) => {
                   <img
                     key={index}
                     src={`${Domain}${image}`}
-                    className="w-60 h-auto object-cover rounded-md cursor-pointer hover:scale-105 transition-transform"
+                    className="w-80 h-auto object-cover rounded-md cursor-pointer hover:scale-105 transition-transform"
                     alt=""
                     onClick={() => setSelectedImage(`${Domain}${image}`)}
                   />
@@ -91,6 +105,7 @@ const Posts = ({sharedPosts}) => {
             )}
 
             <div className="flex justify-end items-center gap-4 text-gray-600 text-xl">
+
               <button
                 onClick={() => handleShowComments(post.postId || post.shareId, post)}
                 className={`flex items-center gap-1 ${selectedPostId === (post.postId || post.shareId)&& showCommentsPopup ? "text-blue-600" : ""}`}
@@ -101,7 +116,7 @@ const Posts = ({sharedPosts}) => {
               <FontAwesomeIcon
                 icon={faHeart}
                 onClick={() => toggleLike(post,sharedPosts)}
-                className={`cursor-pointer ${post.isLiked ? "text-red-500" : "text-gray-400"}`}
+                className={`cursor-pointer ${post.isLikedByCurrentUser ? "text-red-500" : "text-gray-400"}`}
               />
               <span
                 onClick={() =>
@@ -116,6 +131,20 @@ const Posts = ({sharedPosts}) => {
               >
                 {post.likesCount || 0}
               </span>
+
+                    {
+          post.isSavedByCurrentUser ? (
+                   <FaBookmark
+          onClick={() => {saveandunsavedPost(post.postId ,setSaved);}}
+          className=" top-4 right-4 text-lg cursor-pointer"
+        />
+          ) : (
+                  <FaRegBookmark
+          onClick={() => {saveandunsavedPost(post.postId,setSaved);}}
+          className=" top-4 right-4 text-lg cursor-pointer"
+        />
+          )
+        }
             </div>
 
             {selectedImage && (
@@ -232,7 +261,18 @@ const Posts = ({sharedPosts}) => {
                       className="w-10 h-10 rounded-full"
                     />
                     <span className="text-sm font-medium">
-                      {user.user.displayName}
+                     {
+                                 user?.userId ===id? (
+                                       <Link to={`/profile`}>
+                                  <p className="font-semibold text-sm">{user.user?.displayName || "Unknown User"}</p>
+                                </Link>
+                                  ) : (
+                                     <Link to={`/profileusers/${user?.userId}`}>
+                                  <p className="font-semibold text-sm">{user.user?.displayName || "Unknown User"}</p>
+                                </Link>
+                                )
+                                }     
+                    
                     </span>
                   </div>
                 ))
