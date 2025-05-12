@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Domain, Id } from "../../../utels/consts";
 import ReplyComment from "./ReplyComment";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import AddComment from "./AddComment";
 
 const Comment = (props) => {
   const {
@@ -15,6 +16,7 @@ const Comment = (props) => {
     setEditCommentText,
     handleUpdateComment,
     handleDeleteComment,
+    setShowCommentsPopup,
   } = props;
 
   const handleEditComment = (comment) => {
@@ -28,7 +30,10 @@ const Comment = (props) => {
         <p>Loading comments...</p>
       ) : postComments[post.shareId || post.postId]?.length > 0 ? (
         postComments[post.shareId || post.postId].map((comment) => (
-          <div key={comment.id} className="comment bg-white p-4 rounded-lg shadow-sm">
+          <div
+            key={comment.id}
+            className="comment bg-gray-100 p-4 rounded-lg shadow-sm"
+          >
             <div className="comment-header flex items-center gap-3 mb-2">
               <img
                 src={`${Domain}${comment.user.pictureUrl}`}
@@ -36,13 +41,14 @@ const Comment = (props) => {
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div>
-                <strong className="text-sm font-medium">{comment.user.displayName}</strong>
+                <strong className="text-sm font-medium">
+                  {comment.user.displayName}
+                </strong>
                 <p className="text-xs text-gray-500">{comment.user.email}</p>
               </div>
             </div>
 
             <div className="flex justify-between items-start">
-              {/* Left side: Text */}
               <div className="flex-1">
                 {editComment?.id === comment.id ? (
                   <>
@@ -54,8 +60,14 @@ const Comment = (props) => {
                     />
                     <div className="flex gap-2">
                       <button
-                        onClick={(e) =>
-                          handleUpdateComment(editComment, editCommentText, selectedPostId, setEditComment, setEditCommentText)
+                        onClick={() =>
+                          handleUpdateComment(
+                            editComment,
+                            editCommentText,
+                            selectedPostId,
+                            setEditComment,
+                            setEditCommentText
+                          )
                         }
                         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                       >
@@ -73,13 +85,12 @@ const Comment = (props) => {
                     </div>
                   </>
                 ) : (
-                  <p className="text-md text-gray-700 font-bold ">{comment.text}</p>
+                  <p className="text-md text-gray-800">{comment.text}</p>
                 )}
               </div>
 
-              {/* Right side: Edit/Delete icons */}
               {comment.userId === Id && (
-                <div className="comment-actions flex flex-col items-center gap-2">
+                <div className="comment-actions flex flex-col items-center gap-2 pl-2">
                   <button
                     onClick={() => handleEditComment(comment)}
                     className="text-blue-500 hover:text-blue-600"
@@ -88,7 +99,9 @@ const Comment = (props) => {
                     <FontAwesomeIcon icon={faEdit} />
                   </button>
                   <button
-                    onClick={() => handleDeleteComment(comment.id, selectedPostId)}
+                    onClick={() =>
+                      handleDeleteComment(comment.id, selectedPostId)
+                    }
                     className="text-red-500 hover:text-red-600"
                     title="Delete comment"
                   >
@@ -98,7 +111,6 @@ const Comment = (props) => {
               )}
             </div>
 
-            {/* Reply Component */}
             <ReplyComment
               commentId={comment.id}
               selectedPostId={selectedPostId}
@@ -111,6 +123,10 @@ const Comment = (props) => {
       ) : (
         <p>No comments yet.</p>
       )}
+                  <AddComment
+                    postId={post.postId}
+                    shareId={post.shareId}
+                  />
     </div>
   );
 };

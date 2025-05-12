@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { Domain } from "../../utels/consts";
 import Popup from "./Popup";
 import Displayimg from "./displayimg";
-import Postsusers from "../Posts/postsusers";
+import Posts from "../PostsR/Posts";
 function Profileusers() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -196,7 +196,7 @@ function Profileusers() {
       )}
       {isOpen && <Displayimg setIsOpen={setIsOpen} user={user} />}
       {/*Posts*/}
-     <Postsusers posts={posts}/>
+    <Posts sharedPosts={posts} />
     </div>
   );
 }

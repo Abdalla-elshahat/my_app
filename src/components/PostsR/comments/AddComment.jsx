@@ -66,29 +66,10 @@ const AddComment = ({ postId, shareId }) => {
     setEditedText("");
   };
 
-  // const handleCancelEdit = () => {
-  //   setEditingCommentId(null);
-  //   setEditedText("");
-  // };
 
   return (
     <div className="add-comment-container p-2 border-t mt-2">
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-3">
-        <input
-          type="text"
-          placeholder="Write a comment..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="border rounded p-2 w-full"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 rounded hover:bg-blue-600"
-        >
-          Comment
-        </button>
-      </form>
+
 
       <div className="comments-list space-y-2">
         {newComments.map((comment) => (
@@ -175,10 +156,24 @@ const AddComment = ({ postId, shareId }) => {
           </div>
         ))}
       </div>
+            <form onSubmit={handleSubmit} className="flex gap-2 mb-3">
+        <input
+          type="text"
+          placeholder="Write a comment..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="border rounded p-2 w-full"
+          required
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 rounded hover:bg-blue-600"
+        >
+          Comment
+        </button>
+      </form>
     </div>
   );
 };
 
 export default AddComment;
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

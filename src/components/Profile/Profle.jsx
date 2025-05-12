@@ -13,17 +13,15 @@ import { getInterests, getProfile, getSharedPosts, getSkillsById, updatePhoto, u
 import PopupModal from "./popupintersts.jsx";
 import { LearningDataContext } from "../../Contexts/LearningData";
 import axios from "axios";
-import { getGridClass, getImageClass } from "../../apicalls/logics.jsx";
 import Popup from "../profileusers/Popup.jsx";
 import {  getmyfolloweing, getmyfollowers} from "../../apicalls/follows.jsx";
+import Posts from "../PostsR/Posts.jsx";
 
 function Profile() {
   const [followData, setFollowData] = useState([]);
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupTitle, setPopupTitle] = useState("");
   const [Profilelogin, setprofilelogin] = useState([]);
-
-  const [showDetails, setShowDetails] = useState(true);
   const [details, setdetails] = useState({});
   const [NewPhot, setNewPhot] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -110,7 +108,6 @@ function Profile() {
     GetLearningByUserId(id)
       }, [id]);
   
-  
 
   useEffect(() => {
     if (details && Object.keys(details).length > 0) {
@@ -125,33 +122,17 @@ function Profile() {
   useEffect(() => {
     getProfile(setdetails,setNewPhot,setLearning);
     getSharedPosts(setsharedPosts);
-  }, []);
+  }, [sharedPosts]);
 
   useEffect(() => {
     if (details.pictureUrl) {
       setNewPhot(`${Domain}${details?.pictureUrl}`);
-      setsharedPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post?.user?.id === details.id
-            ? {
-                ...post,
-                user: {
-                  ...post.user,
-                  pictureUrl: `${Domain}${details.pictureUrl}`,
-                },
-              }
-            : post
-        )
-      );
     }
   }, [details.pictureUrl]);
 
   useEffect(()=>{
     setNewPhot(NewPhot);
   },[NewPhot]);
-
-
-
 
 
   const handleCheckboxChange = (interest) => {
@@ -741,193 +722,7 @@ value={selectedSkills}
 </div>
 
         {/* Posts */}
-        
-                <div className="mt-8 space-y-6">
-        
-                  {
-
-
-                    sharedPosts?.map( (sharedPost) => {
-                      
-        
-                      return(
-
-                        <>
-
-                        {
-                          sharedPost.type === "Post" ?
-                        
-                        <div  className="bg-white p-4 rounded-lg shadow-sm border">
-                        <div className="flex items-center gap-3 mb-3 ">
-
-                          <div className="bg-red-500 rounded-full">
-
-                          <img 
-          src={sharedPost.shareId === details?.id ? NewPhot : `${Domain}${sharedPost.user.pictureUrl}`}  
-          alt={sharedPost.shareId} 
-          className="w-10 h-10 rounded-full object-cover"
-        />
-                          </div>
-        
-                          <div>
-                            <div className="font-medium">{sharedPost.user.displayName}</div>
-        
-                            <div className="text-gray-500 text-sm">
-                             {new Date(sharedPost.postDate).toLocaleDateString("en-US", {
-                             weekday: "long", // Full day name (e.g., Monday)
-                             day: "numeric", // Day number (e.g., 13)
-                            })}
-                           </div>
-        
-                          </div>
-        
-                        </div>
-                        {showDetails && (
-                          <h3 className="font-medium mb-3 ">{sharedPost.title}</h3>
-                        )}
-        
-        {sharedPost.images && sharedPost.images.length > 0 && (
-  <div className={`grid gap-1 ${getGridClass(sharedPost.images.length)}`}>
-    {sharedPost.images.map((photo, index) => (
-      <img
-        key={index}
-        src={`${Domain}${photo}`}
-        alt="Post"
-        className={`w-full h-full object-cover rounded-lg ${getImageClass(sharedPost.images.length, index)}`}
-      />
-    ))}
-  </div>
-)}
-
-
-        
-                        
-        
-                        <button
-                          className="text-blue-600"
-                          onClick={() => setShowDetails((h) => !h)}
-                        >
-                          {showDetails ? "Hide" : "Show"} details
-                        </button>
-
-                        <div className="flex items-center gap-6 text-gray-500 text-sm">
-                          <span className="flex items-center gap-1">
-                            <Heart size={16} /> {sharedPost.likesCount} reactions
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MessageCircle size={16} /> {sharedPost.commentCount} comments
-                          </span>
-                          <button className="flex items-center gap-1 hover:text-gray-700">
-                            <span>{sharedPost.sharesCount}</span> <Share2 size={16} />
-                          </button>
-                        </div>
-                      </div>
-
-                      : sharedPost.type === "Share" ?
-
-                      <div  className=" p-4 rounded-lg shadow-sm border">
-
-<div className = "mb-3 border-b border-b-[#cfd0d1] py-2" >
-
-<div className="flex items-center gap-3 mb-3  ">
-
-<div className="bg-red-500 rounded-full">
-<img 
-src={`${Domain}${sharedPost?.user?.pictureUrl}`}  
-alt={sharedPost.postId} 
-className="w-10 h-10 rounded-full object-cover"
-/>
-</div>
-
-<div>
-  <div className="font-medium">{sharedPost?.user?.displayName}</div>
-
-  {/* <div className="text-gray-500 text-sm">
-   {new Date(sharedPost.postDate).toLocaleDateString("en-US", {
-   weekday: "short", // Full day name (e.g., Monday)
-   year: "numeric", // Day number (e.g., 13)
-  })}
- </div> */}
-
-<div className="text-gray-500 text-sm">
-  {formatFacebookDate(sharedPost.postDate)}
-</div>
-
-
-
-
-</div>
-
-</div>
-<h3 className="font-medium mb-3 ">{sharedPost.title}</h3>
-
-</div>
-
-
-                      <div className="flex items-center gap-3 mb-3 ">
-
-                        <div className="bg-red-500 rounded-full">
-                        <img 
-        src={ `${Domain}${sharedPost.sharedFrom.user.pictureUrl}`}  
-        alt={sharedPost.sharedFrom.id} 
-        className="w-10 h-10 rounded-full object-cover"
-      />
-                        </div>
-      
-                        <div>
-                          <div className="font-medium">{sharedPost.sharedFrom.user.displayName}</div>
-                        </div>
-      
-                      </div>
-      
-                      {showDetails && (
-                        <h3 className="font-medium mb-3 ">{sharedPost.sharedFrom.title}</h3>
-                      )}
-      
-                      {sharedPost.images?.map((photo, index) => (
-                        <img 
-                          key={index} 
-                          src={`${Domain}${photo}`} 
-                          alt="Saved post" 
-                          className="w-full max-w-[500px] h-auto object-cover rounded-lg shadow-md"
-                        />
-                      ))}
-      
-                      
-      
-                      <button
-                        className="text-blue-600"
-                        onClick={() => setShowDetails((h) => !h)}
-                      >
-                        {showDetails ? "Hide" : "Show"} details
-                      </button>
-
-                      <div className="flex items-center gap-6 text-gray-500 text-sm">
-                        <span className="flex items-center gap-1">
-                          <Heart size={16} /> {sharedPost.likesCount} reactions
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle size={16} /> {sharedPost.commentCount} comments
-                        </span>
-                        <button className="flex items-center gap-1 hover:text-gray-700">
-                          <span>{sharedPost.sharesCount}</span> <Share2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-
-                    : ""
-
-                    }
-
-      
-
-                    </>
-                      )
-        
-                    } )
-                  }
-         
-                </div>
+  <Posts sharedPosts={sharedPosts} />
       </div>
             {/* Popups */}
       {popupOpen && (

@@ -1,24 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
-import AddPosts from "./addposts/Addposts";
 import { Domain, Id } from "../../utels/consts";
-import AddComment from "./comments/AddComment";
-import {
-  fetchCommentsByPostId,
-  fetchLikedUsers,
-  getAllPosts,
-  handleDeleteComment,
-  handleDeletePost,
-  handleUpdateComment,
-  handleUpdatePost,
-  toggleLike,
+import {fetchCommentsByPostId,fetchLikedUsers, handleDeleteComment,handleDeletePost, handleUpdateComment,handleUpdatePost,toggleLike,
 } from "../../apicalls/posts";
 import Comment from "./comments/comment";
 import PostActions from "./comments/PostActions";
-
-const Posts = () => {
-  const [data, setData] = useState([]);
+const Posts = ({sharedPosts}) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [postComments, setPostComments] = useState({});
@@ -31,6 +19,7 @@ const Posts = () => {
   const [currentLikedPostId, setCurrentLikedPostId] = useState(null);
   const [editComment, setEditComment] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
+  const [showCommentsPopup, setShowCommentsPopup] = useState(false);
 
   const handleShowComments = (postId, post) => {
     if (selectedPostId === postId) {
@@ -41,11 +30,9 @@ const Posts = () => {
         fetchCommentsByPostId(postId, setPostComments, setIsLoading);
       }
     }
+    setShowCommentsPopup(true);
   };
 
-  useEffect(() => {
-    getAllPosts(setData);
-  }, []);
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -57,12 +44,11 @@ const Posts = () => {
 
   return (
     <div className="flex flex-col items-center w-full px-4">
-      <AddPosts onPostAdded={getAllPosts} />
       <div className="flex flex-col w-full mt-10 max-w-[1150px] gap-12">
-        {data.map((post) => (
+        {sharedPosts && sharedPosts.map((post) => (
           <div
             key={post.shareId || post.postId}
-            className="w-full bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:-translate-y-1 p-4"
+            className="w-full bg-white rounded-lg shadow-md overflow-hidden transition-transform  p-4"
           >
             <PostActions
               post={post}
@@ -71,7 +57,7 @@ const Posts = () => {
               setEditTitle={setEditTitle}
               setEditImages={setEditImages}
               handleDeletePost={handleDeletePost}
-              setData={setData}
+              setData={sharedPosts}
             />
 
             <div className="flex gap-3 items-center mb-3">
@@ -107,14 +93,14 @@ const Posts = () => {
             <div className="flex justify-end items-center gap-4 text-gray-600 text-xl">
               <button
                 onClick={() => handleShowComments(post.postId || post.shareId, post)}
-                className={`flex items-center gap-1 ${selectedPostId === (post.postId || post.shareId) ? "text-blue-600" : ""}`}
+                className={`flex items-center gap-1 ${selectedPostId === (post.postId || post.shareId)&& showCommentsPopup ? "text-blue-600" : ""}`}
               >
                 <FontAwesomeIcon icon={faComment} />
                 {post.commentCount || 0}
               </button>
               <FontAwesomeIcon
                 icon={faHeart}
-                onClick={() => toggleLike(post, setData)}
+                onClick={() => toggleLike(post,sharedPosts)}
                 className={`cursor-pointer ${post.isLiked ? "text-red-500" : "text-gray-400"}`}
               />
               <span
@@ -145,28 +131,42 @@ const Posts = () => {
               </div>
             )}
 
-            <AddComment
-              postId={post.postId}
-              shareId={post.shareId}
-              onCommentAdded={(newComment) => {
-                console.log("New comment:", newComment);
-              }}
-            />
 
-            {(selectedPostId === post.postId || selectedPostId === post.shareId) && (
-              <Comment
-                post={post}
-                isLoading={isLoading}
-                postComments={postComments}
-                selectedPostId={selectedPostId}
-                editComment={editComment}
-                setEditComment={setEditComment}
-                editCommentText={editCommentText}
-                setEditCommentText={setEditCommentText}
-                handleUpdateComment={handleUpdateComment}
-                handleDeleteComment={handleDeleteComment}
-              />
-            )}
+<>
+
+
+  {/* Popup Overlay + Comment Box */}
+  {(selectedPostId === post.postId || selectedPostId === post.shareId) &&
+    showCommentsPopup && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg relative max-h-[80vh] overflow-y-auto">
+          {/* زر الإغلاق */}
+          <button
+            onClick={() => setShowCommentsPopup(false)}
+            className="absolute top-2 right-2 text-gray-500 hover:text-black text-lg font-bold"
+            title="إغلاق"
+          >
+            ✕
+          </button>
+
+          <Comment
+            post={post}
+            setShowCommentsPopup={setShowCommentsPopup}
+            isLoading={isLoading}
+            postComments={postComments}
+            selectedPostId={selectedPostId}
+            editComment={editComment}
+            setEditComment={setEditComment}
+            editCommentText={editCommentText}
+            setEditCommentText={setEditCommentText}
+            handleUpdateComment={handleUpdateComment}
+            handleDeleteComment={handleDeleteComment}
+          />
+        </div>
+      </div>
+    )}
+</>
+
           </div>
         ))}
       </div>

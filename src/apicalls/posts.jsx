@@ -32,7 +32,6 @@ import { Domain, token } from "../utels/consts";
       console.error("Error fetching posts:", error);
     }
   };
-
 export const handleSubmit = async (e,title,images,setTitle,setImages,setLoading,setMessage,onPostAdded) => {
     e.preventDefault();
 
@@ -63,7 +62,9 @@ export const handleSubmit = async (e,title,images,setTitle,setImages,setLoading,
         setMessage("Post created successfully!");
         setTitle("");
         setImages([]);
-        if (onPostAdded) onPostAdded();
+        if (onPostAdded){ 
+          onPostAdded();
+        }
       } else {
         setMessage(result.message || "Something went wrong.");
       }
