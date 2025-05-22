@@ -65,7 +65,7 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto h-[600px] flex flex-col border shadow-xl rounded-2xl overflow-hidden bg-white fixed right-36 top-11 z-50 w-auto">
+    <div className="max-w-lg mx-auto h-[550px] flex flex-col border shadow-xl rounded-2xl overflow-hidden bg-white fixed right-10 top-0 sm:right-36 sm:top-11 z-50 w-auto">
       {/* Title/Header */}
       <div className="p-4 font-bold text-xl text-center bg-blue-500 text-white flex items-center justify-center gap-2">
         🤖 شات بوت Gemini
