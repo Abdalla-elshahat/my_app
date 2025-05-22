@@ -221,6 +221,16 @@ function Navbar() {
               Add Friends
             </NavLink>
 
+            <NavLink
+              to="/Roadmaps"
+              className={({ isActive }) =>
+                `border-l-4 block pl-3 pr-4 py-2 text-base font-medium ${
+                  isActive ? "border-l-[#3362C8]" : ``
+                }`
+              }
+            >
+              Roadmaps
+            </NavLink>
 
 
           </div>
