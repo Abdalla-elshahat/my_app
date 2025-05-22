@@ -11,7 +11,7 @@ function Home() {
       <Navbar />
       <div className="main-content">
         <Sidebar />
-        <PostsWithactions />
+        <PostsWithactions />  
         <FriendsSuggestions />
       </div>
 

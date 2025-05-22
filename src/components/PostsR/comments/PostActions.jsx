@@ -12,7 +12,6 @@ const PostActions = ({
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -35,8 +34,8 @@ const PostActions = ({
     setShowMenu(false);
   };
 
-  const handleDelete = () => {
-    handleDeletePost(post.postId, setData);
+  const handleDelete =async () => {
+   await handleDeletePost(post.postId, setData);
     setShowMenu(false);
   };
 
