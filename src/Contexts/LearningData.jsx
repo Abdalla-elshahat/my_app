@@ -9,36 +9,44 @@ export const LearningDataProvider = ({ children }) => {
   const [learningggg, setlearning] = useState(null);
   const [id, setId] = useState(null); // Store user ID
 
-  async function sendLearning(school, degree, startDte, endDte, grade, activities, description, about, setErrorMessage) {
-    // Ensure empty strings for optional fields
-    const formattedData = {
-      school: school || "",  // If 'school' is falsy, send an empty string
-      degree: degree || "",  // If 'degree' is falsy, send an empty string
-      startDte: startDte || "",  // If 'startDte' is falsy, send an empty string
-      endDte: endDte || "",  // If 'endDte' is falsy, send an empty string
-      grade: grade || "",  // If 'grade' is falsy, send an empty string
-      activities: activities || "",  // If 'activities' is falsy, send an empty string
-      description: description || "",  // If 'description' is falsy, send an empty string
-      about: about || "",  // If 'about' is falsy, send an empty string
+async function sendLearning(school, degree, startDte, endDte, grade, activities, description, about, setErrorMessage) {
+  const formattedData = {
+    school: school || "",
+    degree: degree || "",
+    startDte: startDte || "",
+    endDte: endDte || "",
+    grade: grade || "",
+    activities: activities || "",
+    description: description || "",
+    about: about || "",
+  };
+
+  try {
+    const url = `${Domain}/api/Learning/Learning`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     };
-  
-    try {
-      const res = await axios.put(`${Domain}/api/Learning/Learning`, formattedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-  
-      console.log(res.data);
-      setlearning(res.data);
-      return res.data;
-    } catch (err) {
-      console.error("❌ Error:", err);
-      setErrorMessage(err.response?.data?.message || "An error occurred.");
-      throw err;
+
+    let res;
+    if (!learningggg) {
+      // مفيش بيانات => POST
+      res = await axios.post(url, formattedData, { headers });
+    } else {
+      // فيه بيانات => PUT (تحديث)
+      res = await axios.put(url, formattedData, { headers });
     }
+
+    console.log(res.data);
+    setlearning(res.data);
+    return res.data;
+  } catch (err) {
+    console.error("❌ Error:", err);
+    setErrorMessage(err.response?.data?.message || "An error occurred.");
+    throw err;
   }
+}
+
   
 
   // GetCurrentUser endpoint to fetch the user ID

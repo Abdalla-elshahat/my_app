@@ -72,6 +72,10 @@ function RightSide() {
           >
             {loading ? "Logging in..." : "Log in"}
           </button>
+               <div className="mt-6 text-center">
+          <span className="text-sm text-gray-600">don't have an account? </span>
+          <Link to="/signup" className="text-sm text-blue-600 hover:text-blue-500">Signup</Link>
+        </div>
         </form>
         <SocialLogin />
       </div>

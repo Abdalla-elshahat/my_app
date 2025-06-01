@@ -213,7 +213,7 @@ export const fetchCommentsByPostId = async (postId, setPostComments) => {
 
   try {
     const response = await fetch(
-      `http://arabdevcommunity.runasp.net/api/Comment/Getcomments/${postId}`,
+      `${Domain}/api/Comment/Getcomments/${postId}`,
       {
         method: "GET",
         headers: {
@@ -252,7 +252,7 @@ export const handleDeleteComment = async (commentId, selectedPostId) => {
 
   try {
     const response = await fetch(
-      `http://arabdevcommunity.runasp.net/api/Comment/Deletecomment/${commentId}`,
+      `${Domain}/api/Comment/Deletecomment/${commentId}`,
       {
         method: "DELETE",
         headers: {

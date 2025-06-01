@@ -22,7 +22,7 @@ const AddComment = ({ postId, shareId }) => {
 
     try {
       const response = await fetch(
-        "http://arabdevcommunity.runasp.net/api/Comment/Addcomment",
+        `${Domain}/api/Comment/Addcomment`,
         {
           method: "POST",
           headers: {

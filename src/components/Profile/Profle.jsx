@@ -164,7 +164,7 @@ function sendSkills() {
   console.log("Sending Payload:", JSON.stringify(payload, null, 2));
 
   axios
-    .put("http://arabdevcommunity.runasp.net/api/Skill/update-skill", payload, {
+    .put(`${Domain}/api/Skill/update-skill`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

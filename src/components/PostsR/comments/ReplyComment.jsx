@@ -24,7 +24,7 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
     const fetchReplies = async () => {
       try {
         const response = await fetch(
-          `http://arabdevcommunity.runasp.net/api/Comment/Getcomment/${commentId}`,
+          `${Domain}/api/Comment/Getcomment/${commentId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
 
     axios
       .post(
-        `http://arabdevcommunity.runasp.net/api/Comment/Add-reply/${commentId}`,
+        `${Domain}/api/Comment/Add-reply/${commentId}`,
         body,
         {
           headers: {
@@ -131,7 +131,7 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
 
     try {
       await axios.put(
-        `http://arabdevcommunity.runasp.net/api/Comment/Editcomment/${editingReplyId}`,
+        `${Domain}/api/Comment/Editcomment/${editingReplyId}`,
         { text: editReplyText },
         {
           headers: {

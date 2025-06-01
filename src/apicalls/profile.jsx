@@ -122,7 +122,7 @@ export  function GetLearningByUserId(id,setLearningData,setFormData,setErrorMess
       });
 }
 export function getInterests(setSelectedInterests){
-    axios.get("http://arabdevcommunity.runasp.net/api/User/GetInterests", {
+    axios.get(`${Domain}/api/User/GetInterests`, {
               headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export function getInterests(setSelectedInterests){
   }
 export function getSkillsById(id,setskillId,setSelectedSkills) {
     axios
-      .get(`http://arabdevcommunity.runasp.net/api/Skill/${id}`, {
+      .get(`${Domain}/api/Skill/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

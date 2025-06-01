@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; // Import axios
-import { token } from "../../utels/consts";
+import { Domain, token } from "../../utels/consts";
 
 function PopupModal({
   isOpen,
@@ -51,7 +51,7 @@ function PopupModal({
 
     try {
       await axios.put(
-        "http://arabdevcommunity.runasp.net/api/User/UpdateInterests",
+        `${Domain}/api/User/UpdateInterests`,
         interestsToSend,
         {
           headers: {
