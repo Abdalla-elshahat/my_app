@@ -112,45 +112,62 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
         console.error("Error submitting reply:", err);
       });
   }
+const handleDeleteReply = async (replyId) => {
+  try {
+    await axios.delete(`${Domain}/api/Comment/Deletecomment/${replyId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const handleDeleteReply = (replyId) => {
     const updatedReplies = replies.filter((r) => r.id !== replyId);
     setReplies(updatedReplies);
 
     const localRepliesKey = `replies_post_${selectedPostId}`;
     localStorage.setItem(localRepliesKey, JSON.stringify(updatedReplies));
-  };
+  } catch (error) {
+    console.error("Failed to delete reply:", error);
+  }
+};
+
 
   const handleEditReply = (replyId, currentText) => {
     setEditingReplyId(replyId);
     setEditReplyText(currentText);
   };
 
-  const handleUpdateReply = async () => {
-    if (!editReplyText.trim()) return;
+const handleUpdateReply = async () => {
+  if (!editReplyText.trim()) return;
 
-    try {
-      await axios.put(
-        `${Domain}/api/Comment/Editcomment/${editingReplyId}`,
-        { text: editReplyText },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  try {
+    await axios.put(
+      `${Domain}/api/Comment/Editcomment/${editingReplyId}`,
+      { text: editReplyText },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-      const updatedReplies = replies.map((reply) =>
-        reply.id === editingReplyId ? { ...reply, text: editReplyText } : reply
-      );
-      setReplies(updatedReplies);
-      setEditingReplyId(null);
-      setEditReplyText("");
-    } catch (error) {
-      console.error("Failed to update reply:", error);
-    }
-  };
+    const updatedReplies = replies.map((reply) =>
+      reply.id === editingReplyId ? { ...reply, text: editReplyText } : reply
+    );
+    setReplies(updatedReplies);
+
+    // تحديث localStorage بعد التعديل
+    const localRepliesKey = `replies_post_${selectedPostId}`;
+    localStorage.setItem(localRepliesKey, JSON.stringify(updatedReplies));
+
+    // إعادة ضبط الحالة
+    setEditingReplyId(null);
+    setEditReplyText("");
+  } catch (error) {
+    console.error("Failed to update reply:", error);
+  }
+};
+
 
   return (
     <div className="p-4 border-t mt-4">
