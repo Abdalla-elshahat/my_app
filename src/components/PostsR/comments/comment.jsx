@@ -47,11 +47,11 @@ const { id  } = useContext(LearningDataContext);
                   {
                                   post.user?.userId ===id? (
                                        <Link to={`/profile`}>
-                                  <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
+                                  <p className="font-semibold text-sm">{comment.user?.displayName || "Unknown User"}</p>
                                 </Link>
                                   ) : (
                                      <Link to={`/profileusers/${post.user?.userId}`}>
-                                  <p className="font-semibold text-sm">{post.user?.displayName || "Unknown User"}</p>
+                                  <p className="font-semibold text-sm">{comment.user?.displayName || "Unknown User"}</p>
                                 </Link>
                                 )
                                 }     

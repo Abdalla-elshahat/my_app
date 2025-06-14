@@ -33,7 +33,7 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
         );
         const result = await response.json();
 
-        if (response.ok) {
+        if (response.ok) {        
           const data =
             result.data && Array.isArray(result.data.replies)
               ? result.data.replies
@@ -68,8 +68,7 @@ const ReplyComment = ({ commentId, selectedPostId, onReplyAdded }) => {
       postId: postId,
     };
 
-    axios
-      .post(
+    axios.post(
         `${Domain}/api/Comment/Add-reply/${commentId}`,
         body,
         {
