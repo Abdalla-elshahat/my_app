@@ -236,10 +236,10 @@ export const fetchCommentsByPostId = async (postId, setPostComments) => {
     const data = await response.json();
     setPostComments((prevComments) => ({
       ...prevComments,
-      [postId]: data.data,
+      [postId]: data,
     }));
 
-    console.log("Comments for post:", data.data);
+    console.log("Comments for post:", data);
   } catch (err) {
     console.error("Fetch error:", err);}
 };
