@@ -48,7 +48,7 @@ function Navbar() {
               <div className="flex-shrink-0 flex items-center">
                 <div className="text-indigo-600 font-bold text-2xl flex items-center">
                   <div className="logo font-aclonica tracking-wider ">
-                    ArabDev
+                    <Link to={"/"}>ArabDev</Link>
                   </div>
                 </div>
               </div>

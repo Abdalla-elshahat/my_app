@@ -9,15 +9,12 @@ import Savedpodcast from "./savedpodcasts";
 const Saved = () => {
   const [savedItems, setSavedItems] = useState([]);
   const [isclose, setisclose] = useState(false);
-  // ✅ Fetch saved posts
   function getSaved() {
     axios
       .get(`${Domain}/api/SavedPost/saved-posts`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        console.log("✅ Saved items:", res.data.data);
-        console.log(res.data.data)
         setSavedItems(res.data.data || []);
       })
       .catch((err) => {
@@ -25,20 +22,6 @@ const Saved = () => {
       });
   }
 
-  // ✅ Toggle Save/Unsave Post
-  function toggleSave(postId) {
-    axios
-      .post(`${Domain}/api/SavedPost/toggle-save/${postId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(() => {
-        console.log(`🔄 Toggled save for post ID: ${postId}`);
-        getSaved(); // Refresh saved items
-      })
-      .catch((err) => {
-        console.error("❌ Error toggling save:", err);
-      });
-  }
   useEffect(() => {
     getSaved();
   }, []);
@@ -50,15 +33,11 @@ const Saved = () => {
       {isclose && <Savedpodcast onClose={() => setisclose(false)} />}
        <FaBookmark style={{ color: "#3362C8",cursor:"pointer"}}  onClick={()=>setisclose(!isclose)}/> Saved podcast
       </h2>
+
       <div className="saved-items-list">
         {savedItems.length > 0 ? (
           savedItems?.map((item) => (
-            <SavedItemCard
-              key={item.id}
-              {...item}
-              getSaved = {getSaved}
-              onToggleSave={() => toggleSave(item.id)} // Pass function to child component
-            />
+            <SavedItemCard key={item.id} {...item} getSaved = {savedItems} />
           ))
         ) : (
           <p>No saved items yet.</p>

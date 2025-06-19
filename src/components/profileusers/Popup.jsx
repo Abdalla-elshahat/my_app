@@ -57,7 +57,7 @@ function Popup({ title, data,setdate, onClose,Profilelogin}) {
                       )
                     }
                   
-                    <p className="text-gray-500 text-xs">{user.job || "No job listed"}</p>
+                    {/* <p className="text-gray-500 text-xs">{user.job || "No job listed"}</p> */}
                   </div>
                 </div>
                      {/* زر Follow */}

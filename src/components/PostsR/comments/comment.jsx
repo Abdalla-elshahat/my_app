@@ -3,7 +3,7 @@ import { Domain, Id } from "../../../utels/consts";
 import ReplyComment from "./ReplyComment";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import AddComment from "./AddComment";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { LearningDataContext } from "../../../Contexts/LearningData";
 import { Link } from "react-router-dom";
 
@@ -26,7 +26,6 @@ const { id  } = useContext(LearningDataContext);
     setEditComment(comment);
     setEditCommentText(comment.text);
   };
-
   return (
     <div className="comments-section space-y-4">
       {isLoading ? (

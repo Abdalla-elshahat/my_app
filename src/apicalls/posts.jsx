@@ -14,7 +14,6 @@ export const getAllPosts = async (setData) => {
     const result = await response.json();
    
     setData(result.data);
-    console.log(result.data);
   } catch (error) {
     console.error("Error fetching posts:", error);
   }
@@ -239,8 +238,6 @@ export const fetchCommentsByPostId = async (postId, setPostComments) => {
       ...prevComments,
       [postId]: data,
     }));
-
-    console.log("Comments for post:", data);
   } catch (err) {
     console.error("Fetch error:", err);}
 };

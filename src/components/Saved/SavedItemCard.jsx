@@ -1,133 +1,148 @@
-import { React, useState } from "react";
-import Icons from "../Icons/Icons";
-import { Domain, token } from './../../utels/consts';
+import React, { useState, useContext, useEffect } from "react";
+import { Domain, token } from "./../../utels/consts";
 import { CiCircleMinus } from "react-icons/ci";
 import axios from "axios";
-import Swal from 'sweetalert2';
-import { useContext } from 'react';
-import { SavedPostsContext } from '../../Contexts/SavedPostsContext';
-const SavedItemCard = ({
-  displayName,
-  createAt,
-  describtion,
-  likesCount,
-  commentCount,
-  userImage,
-  postId,
-  images,
-  getSaved
-}) => {
-  const { savedPosts , setSavedPosts , setunsve } = useContext(SavedPostsContext);
-  const [showDetails, setShowDetails] = useState(true);
-  const [failSaved, setfailSaved] = useState("")
-  function unsavedDone(unsaveMessage){
+import Swal from "sweetalert2";
+import PostActions from "../PostsR/comments/PostActions";
+import { fetchCommentsByPostId, fetchLikedUsers, handleDeleteComment, handleDeletePost, handleUpdateComment, handleUpdatePost, saveandunsavedPost, toggleLike } from "../../apicalls/posts";
+import { LearningDataContext } from "../../Contexts/LearningData";
+import { SavedPostsContext } from "../../Contexts/SavedPostsContext";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
+import Comment from "../PostsR/comments/comment";
+
+const SavedItemCard = ({ postId, getSaved }) => {
+  const { savedPosts, setSavedPosts, setunsve } = useContext(SavedPostsContext);
+  const { id } = useContext(LearningDataContext);
+  const [failSaved, setfailSaved] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [postComments, setPostComments] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [editPost, setEditPost] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editImages, setEditImages] = useState([]);
+  const [showLikesPopup, setShowLikesPopup] = useState(false);
+  const [likedUsers, setLikedUsers] = useState([]);
+  const [currentLikedPostId, setCurrentLikedPostId] = useState(null);
+  const [editComment, setEditComment] = useState(null);
+  const [editCommentText, setEditCommentText] = useState("");
+  const [showCommentsPopup, setShowCommentsPopup] = useState(false);
+
+  const handleShowComments = (postId, post) => {
+    if (selectedPostId === postId) {
+      setSelectedPostId(null);
+    } else {
+      setSelectedPostId(postId);
+      if (!postComments[postId]) {
+        fetchCommentsByPostId(postId, setPostComments, setIsLoading);
+      }
+    }
+    setShowCommentsPopup(true);
+  };
+  function unsavedDone(unsaveMessage) {
     Swal.fire({
       position: "center",
       icon: "success",
       title: `${unsaveMessage}`,
       showConfirmButton: false,
       timer: 1700,
-      background: "#F8F9FA", // Light yellow background
+      background: "#F8F9FA",
     });
   }
 
-    // Convert createAt to Month Name and Day
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
-    };
-
-    const toggleSave = (postId) => {
-      axios
-        .post(`${Domain}/api/SavedPost/toggle-save/${postId}`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          console.log(`🔄 Toggled save for post ID: ${postId}`, res.data);
-
-          console.log(res.data  )
-          setfailSaved(res.data.message)
+  const toggleSave = (postId) => {
+    axios.post(`${Domain}/api/SavedPost/toggle-save/${postId}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      setfailSaved(res.data.message);
+      unsavedDone(res.data.message);
+      getSaved();
+      setunsve(false);
+      setSavedPosts((prev) => {
+        const updatedPosts = { ...prev };
+        if (updatedPosts[postId]) delete updatedPosts[postId];
+        else updatedPosts[postId] = true;
+        return updatedPosts;
+      });
+      getSaved();
+      setunsve(false);
+    }).catch((err) => {
+      console.error("❌ Error toggling save:", err);
+    });
+  };
+useEffect(()=>{
   
-          unsavedDone(res.data.message)
-  
-          getSaved(); // Refresh saved items
-
-          setunsve(false)
-    
-          setSavedPosts((prev) => {
-            const updatedPosts = { ...prev };
-            if (updatedPosts[postId]) {
-              delete updatedPosts[postId]; // Remove if already saved
-            } else {
-              updatedPosts[postId] = true; // Add if not saved
-            }
-            return updatedPosts;
-          });
-    
-          getSaved(); // Refresh saved items
-          setunsve(false);
-        })
-        .catch((err) => {
-          console.error("❌ Error toggling save:", err);
-        });
-    };
-    
-
-  
+},[savedPosts])
   return (
-  
-  <div className="saved-item-card">
-  
-      <div className="saved-card-header bg-re-500 relative">
-        <img src= {`${Domain}${userImage}`} alt="profile" className="profile-image" />
+    <div className="saved-item-card">
+      <div className="flex flex-col w-full mt-10 gap-12">
+        {getSaved && getSaved.map((post) => (
+          console.log(post),
+          <div key={post.shareId || post.postId} className="relative w-full bg-white rounded-lg shadow-md overflow-hidden transition-transform p-4">
+            <button onClick={() => toggleSave(postId)} className="absolute top-3 right-3 text-gray-600 hover:text-red-600" title="Remove from saved">
+              <CiCircleMinus className="text-2xl" />
+            </button>
 
-        <div>
-          <h4>{displayName}</h4>
-          <p className="date">{formatDate(createAt)}</p>
-        </div>
+            <PostActions post={post} Id={postId} setEditPost={setEditPost} setEditTitle={setEditTitle} setEditImages={setEditImages} handleDeletePost={handleDeletePost} setData={getSaved} />
 
+            <div className="flex gap-3 items-center mb-3">
+              <img src={ `${Domain}${post.userImage}`} alt={post.displayName || "Unknown User"} className="w-10 h-10 rounded-full" />
+              <div>
+                        {
+                                post.userId ===id? (
+                                     <Link to={`/profile`}>
+                                <p className="font-semibold text-sm">{post.displayName || "Unknown User"}</p>
+                              </Link>
+                                ) : (
+                                   <Link to={`/profileusers/${post.userId}`}>
+                                <p className="font-semibold text-sm">{post.displayName || "Unknown User"}</p>
+                              </Link>
+                              )
+                              }  
+                <p className="text-xs text-gray-500">{new Date(post.createAt).toLocaleDateString()}</p>
+              </div>
+            </div>
 
-        <button className = "unSavepost absolute right-0" onClick={() => toggleSave(postId)} >
-        <CiCircleMinus className="text-[24px] text-[#4d4a4a]" />
+            <p className="text-lg font-semibold text-gray-900 break-words mb-3">{post.title || ""}</p>
 
-        </button>
-  
-      </div>
-  
-      <div className="saved-card-content">
-  
-        {showDetails && <p>{describtion}</p>}
+            {post.images.length > 0 && (
+              <div className="flex justify-center flex-wrap gap-2 mb-4">
+                {post.images.map((image, index) => (
+                  <img key={index} src={`${Domain}${image}`} className="w-80 h-auto object-cover rounded-md cursor-pointer hover:scale-105 transition-transform" alt="" onClick={() => setSelectedImage(`${Domain}${image}`)} />
+                ))}
+              </div>
+            )}
 
-{images?.map((photo, index) => (
-  <img 
-    key={index} 
-    src={`${Domain}${photo}`} 
-    alt="Saved post" 
-    className="w-full max-w-[500px] h-auto object-cover rounded-lg shadow-md"
-  />
-))}
+            <div className="flex justify-end items-center gap-4 text-gray-600 text-xl">
+              <button onClick={() => handleShowComments(post.postId || post.shareId, post)} className={`flex items-center gap-1 ${selectedPostId === (post.postId || post.shareId) && showCommentsPopup ? "text-blue-600" : ""}`}>
+                <FontAwesomeIcon icon={faComment} />
+                {post.commentCount || 0}
+              </button>
+              <FontAwesomeIcon icon={faHeart} onClick={() => toggleLike(post, getSaved)} className={`cursor-pointer ${post.isLikedByCurrentUser ? "text-red-500" : "text-gray-400"}`} />
+              <span onClick={() => fetchLikedUsers(post.postId || post.shareId, setLikedUsers, setCurrentLikedPostId, setShowLikesPopup)} className="cursor-pointer text-sm">
+                {post.likesCount || 0}
+              </span>
+        
+            </div>
 
+            {selectedImage && (
+              <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" onClick={() => setSelectedImage(null)}>
+                <img src={selectedImage} alt="Full View" className="max-w-full max-h-full object-contain p-4" />
+              </div>
+            )}
 
-
-        <button
-          className="text-blue-600"
-          onClick={() => setShowDetails((h) => !h)}
-        >
-          {showDetails ? "Hide" : "Show"} details
-        </button>
-  
-      </div>
-  
-      <div className="saved-card-footer">
-        <span>
-          {likesCount} reactions • {commentCount} comments
-        </span>
-  
-        <div className="card-icons">
-          <Icons />
-        </div>
-
-
+            {(selectedPostId === post.postId || selectedPostId === post.shareId) && showCommentsPopup && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg relative max-h-[80vh] overflow-y-auto">
+                  <button onClick={() => setShowCommentsPopup(false)} className="absolute top-2 right-2 text-gray-500 hover:text-black text-lg font-bold" title="إغلاق">✕</button>
+                  <Comment post={post} setShowCommentsPopup={setShowCommentsPopup} isLoading={isLoading} postComments={postComments} selectedPostId={selectedPostId} editComment={editComment} setEditComment={setEditComment} editCommentText={editCommentText} setEditCommentText={setEditCommentText} handleUpdateComment={handleUpdateComment} handleDeleteComment={handleDeleteComment} />
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
