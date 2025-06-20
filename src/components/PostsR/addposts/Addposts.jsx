@@ -89,11 +89,6 @@ const AddPost = ({ onPostAdded }) => {
           className="hidden"
         />
 
-        {/* Feedback Message */}
-        {message && (
-          <div className="text-center text-sm text-gray-700 mt-2">{message}</div>
-        )}
-
         {/* Image Previews */}
         {images.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">

@@ -18,11 +18,21 @@ export const getAllPosts = async (setData) => {
     console.error("Error fetching posts:", error);
   }
 };
-export const handleSubmit = async (e, title, images, setTitle, setImages, setLoading, setMessage, onPostAdded) => {
+export const handleSubmit = async (
+  e,
+  title,
+  images,
+  setTitle,
+  setImages,
+  setLoading,
+  onPostAdded
+) => {
   e.preventDefault();
 
   if (!title.trim()) {
-    setMessage("Please enter content before submitting.");
+    toast.warn("Please enter content before submitting.", {
+      icon: <FaExclamationCircle color="orange" />,
+    });
     return;
   }
 
@@ -34,6 +44,7 @@ export const handleSubmit = async (e, title, images, setTitle, setImages, setLoa
 
   try {
     setLoading(true);
+
     const response = await fetch(`${Domain}/api/Post/CreatePost`, {
       method: "POST",
       headers: {
@@ -45,18 +56,25 @@ export const handleSubmit = async (e, title, images, setTitle, setImages, setLoa
     const result = await response.json();
 
     if (response.ok) {
-      setMessage("Post created successfully!");
+      toast.success(result.message || "Post created successfully!", {
+        icon: <FaCheckCircle color="green" />,
+      });
+
       setTitle("");
       setImages([]);
       if (onPostAdded) {
         onPostAdded();
       }
     } else {
-      setMessage(result.message || "Something went wrong.");
+      toast.error(result.message || "Something went wrong while creating the post.", {
+        icon: <FaExclamationCircle color="red" />,
+      });
     }
   } catch (error) {
-    setMessage("Error creating post.");
     console.error(error);
+    toast.error("Error creating post. Please try again.", {
+      icon: <FaExclamationCircle color="red" />,
+    });
   } finally {
     setLoading(false);
   }
@@ -146,13 +164,13 @@ export const toggleLike = async (post, setData) => {
   }
 };
 export const handleUpdatePost = async (editPost, editTitle, editImages, setEditPost) => {
-  console.log(editPost);
   if (!editPost) return;
 
   const formData = new FormData();
   formData.append("title", editTitle);
   editImages.forEach((img) => formData.append("images", img));
   const postIdentifier = editPost.postId;
+
   try {
     const response = await fetch(`${Domain}/api/Post/${postIdentifier}`, {
       method: "PUT",
@@ -162,17 +180,27 @@ export const handleUpdatePost = async (editPost, editTitle, editImages, setEditP
       body: formData,
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const err = await response.json();
-      console.error("Update error:", err);
+      console.error("Update error:", result);
+      toast.error(result.message || "Failed to update post", {
+        icon: <FaExclamationCircle color="red" />,
+      });
       return;
     }
 
-    alert("Post updated!");
+    toast.success(result.message || "Post updated successfully!", {
+      icon: <FaCheckCircle color="green" />,
+    });
+
     setEditPost(null);
     getAllPosts();
   } catch (error) {
     console.error("Error updating post:", error);
+    toast.error("Something went wrong while updating the post.", {
+      icon: <FaExclamationCircle color="red" />,
+    });
   }
 };
 export const handleDeletePost = async (postId, setData) => {
@@ -201,7 +229,7 @@ export const handleDeletePost = async (postId, setData) => {
     setData((prevData) => prevData.filter((post) => post.postId !== postId));
   } catch (error) {
     console.error("Error deleting post:", error);
-    // toast.error("Something went wrong. Please try again later.");
+
   }
 };
 // Fetch comments for a specific post

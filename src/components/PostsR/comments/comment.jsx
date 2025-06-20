@@ -21,6 +21,7 @@ const Comment = (props) => {
     handleDeleteComment,
     setShowCommentsPopup,
   } = props;
+  
 const { id  } = useContext(LearningDataContext);
   const handleEditComment = (comment) => {
     setEditComment(comment);

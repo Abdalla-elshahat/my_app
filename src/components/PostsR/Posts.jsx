@@ -45,8 +45,8 @@ const { id  } = useContext(LearningDataContext);
   }, []);
 
   return (
-    <div className="flex flex-col items-center w-full px-4">
-      <div className="flex flex-col w-full mt-10  gap-12">
+    <div className="flex flex-col items-center w-full px-4 mt-3 ">
+      <div className="flex flex-col w-full  gap-12">
         {sharedPosts && sharedPosts.map((post) => (
           <div
             key={post.shareId || post.postId}

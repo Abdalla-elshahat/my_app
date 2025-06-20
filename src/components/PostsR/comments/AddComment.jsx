@@ -3,6 +3,7 @@ import { token, Domain, Id } from "../../../utels/consts";
 import ReplyComment from "./ReplyComment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { fetchCommentsByPostId } from "../../../apicalls/posts";
 
 const AddComment = ({ postId, shareId }) => {
   const [text, setText] = useState("");

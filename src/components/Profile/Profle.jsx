@@ -71,15 +71,17 @@ function Profile() {
       }, [id]);
   
 
-  useEffect(() => {
-    if (details && Object.keys(details).length > 0) {
-      setProfileData({
-        displayName: details.displayName || "",
-        address: details.address || "",
-        job: details.job || "",
-      });
-    }
-  }, [details]);
+useEffect(() => {
+  // نملأ البيانات فقط لو لم يتم تعديلها يدوياً
+  if (!popup && details && Object.keys(details).length > 0) {
+    setProfileData({
+      displayName: details.displayName || "",
+      address: details.address || "",
+      job: details.job || "",
+    });
+  }
+}, [details, popup]);
+
 
   useEffect(() => {
     getProfile(setdetails,setNewPhot,setLearning);

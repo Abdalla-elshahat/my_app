@@ -1,17 +1,21 @@
-:root{
-  --primary-color:white;
-  --main-color: #3362C8;
-}
 .Home {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .main-content {
-    display: flex;
-    flex: 1;
-    width: 100%;
-  }
-  
-  
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  overflow: hidden; /* مهم علشان ميطلعش اسكرول جانبي */
+}
+
+/* ده العنصر اللي جوه main-content وهيبقى هو اللي بيعمل Scroll */
+.posts-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px; /* عشان مفيش Scroll يقطع الكلام */
+  max-height: calc(100vh - 80px); /* لو Navbar ارتفاعه 80 مثلاً */
+}
