@@ -77,7 +77,7 @@ function RightSide() {
           <Link to="/signup" className="text-sm text-blue-600 hover:text-blue-500">Signup</Link>
         </div>
         </form>
-        <SocialLogin />
+        {/* <SocialLogin /> */}
       </div>
     </div>
   );

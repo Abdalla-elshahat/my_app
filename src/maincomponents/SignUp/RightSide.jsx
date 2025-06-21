@@ -63,7 +63,7 @@ function RightSide() {
           <span className="text-sm text-gray-600">Already have an account? </span>
           <Link to="/login" className="text-sm text-blue-600 hover:text-blue-500">Log in</Link>
         </div>
-        <SocialLogin />
+        {/* <SocialLogin /> */}
       </div>
     </div>
   );
